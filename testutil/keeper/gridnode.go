@@ -36,11 +36,16 @@ func GridnodeKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		memStoreKey,
 		"GridnodeParams",
 	)
+
+	// Create a mock BankKeeper for testing purposes
+	bankKeeper := mockBankKeeper()
+
 	k := keeper.NewKeeper(
 		cdc,
 		storeKey,
 		memStoreKey,
 		paramsSubspace,
+		bankKeeper, // Pass the bankKeeper as an argument
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
@@ -49,4 +54,12 @@ func GridnodeKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	k.SetParams(ctx, types.DefaultParams())
 
 	return k, ctx
+}
+
+// Create a mock BankKeeper for testing purposes
+func mockBankKeeper() types.BankKeeper {
+	// Implement your mock BankKeeper here
+	// This can be a simple struct that fulfills the types.BankKeeper interface
+	// with the necessary methods for your tests
+	return &MockBankKeeper{}
 }

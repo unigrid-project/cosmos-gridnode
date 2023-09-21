@@ -1,0 +1,11 @@
+version: v1
+name: buf.build/unigrid-project/cosmos-sdk-gridnode
+
+deps:
+  - buf.build/cosmos/cosmos-proto
+  - buf.build/cosmos/gogo-proto
+  - buf.build/googleapis/googleapis
+
+lint:
+  use:
+    - DEFAULT
