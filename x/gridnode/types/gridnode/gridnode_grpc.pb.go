@@ -109,3 +109,93 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "cosmossdkgridnode/gridnode/gridnode.proto",
 }
+
+const (
+	GridnodeMsg_DelegateTokens_FullMethodName = "/cosmossdkgridnode.gridnode.GridnodeMsg/DelegateTokens"
+)
+
+// GridnodeMsgClient is the client API for GridnodeMsg service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type GridnodeMsgClient interface {
+	DelegateTokens(ctx context.Context, in *MsgDelegateTokens, opts ...grpc.CallOption) (*MsgDelegateTokensResponse, error)
+}
+
+type gridnodeMsgClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewGridnodeMsgClient(cc grpc.ClientConnInterface) GridnodeMsgClient {
+	return &gridnodeMsgClient{cc}
+}
+
+func (c *gridnodeMsgClient) DelegateTokens(ctx context.Context, in *MsgDelegateTokens, opts ...grpc.CallOption) (*MsgDelegateTokensResponse, error) {
+	out := new(MsgDelegateTokensResponse)
+	err := c.cc.Invoke(ctx, GridnodeMsg_DelegateTokens_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// GridnodeMsgServer is the server API for GridnodeMsg service.
+// All implementations must embed UnimplementedGridnodeMsgServer
+// for forward compatibility
+type GridnodeMsgServer interface {
+	DelegateTokens(context.Context, *MsgDelegateTokens) (*MsgDelegateTokensResponse, error)
+	mustEmbedUnimplementedGridnodeMsgServer()
+}
+
+// UnimplementedGridnodeMsgServer must be embedded to have forward compatible implementations.
+type UnimplementedGridnodeMsgServer struct {
+}
+
+func (UnimplementedGridnodeMsgServer) DelegateTokens(context.Context, *MsgDelegateTokens) (*MsgDelegateTokensResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelegateTokens not implemented")
+}
+func (UnimplementedGridnodeMsgServer) mustEmbedUnimplementedGridnodeMsgServer() {}
+
+// UnsafeGridnodeMsgServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GridnodeMsgServer will
+// result in compilation errors.
+type UnsafeGridnodeMsgServer interface {
+	mustEmbedUnimplementedGridnodeMsgServer()
+}
+
+func RegisterGridnodeMsgServer(s grpc.ServiceRegistrar, srv GridnodeMsgServer) {
+	s.RegisterService(&GridnodeMsg_ServiceDesc, srv)
+}
+
+func _GridnodeMsg_DelegateTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDelegateTokens)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GridnodeMsgServer).DelegateTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GridnodeMsg_DelegateTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GridnodeMsgServer).DelegateTokens(ctx, req.(*MsgDelegateTokens))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// GridnodeMsg_ServiceDesc is the grpc.ServiceDesc for GridnodeMsg service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var GridnodeMsg_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "cosmossdkgridnode.gridnode.GridnodeMsg",
+	HandlerType: (*GridnodeMsgServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "DelegateTokens",
+			Handler:    _GridnodeMsg_DelegateTokens_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "cosmossdkgridnode/gridnode/gridnode.proto",
+}

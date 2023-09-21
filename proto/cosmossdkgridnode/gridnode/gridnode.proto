@@ -14,6 +14,11 @@ service Query {
   }
 }
 
+// Msg defines the Msg service for gridnode module.
+service GridnodeMsg {
+  rpc DelegateTokens(MsgDelegateTokens) returns (MsgDelegateTokensResponse);
+}
+
 // QueryDelegatedAmountRequest is the request type for the Query/DelegatedAmount RPC method.
 message QueryDelegatedAmountRequest {
   string delegator_address = 1;
@@ -27,4 +32,15 @@ message QueryDelegatedAmountResponse {
 message Delegation {
   string delegator_address = 1;
   int64 amount = 2;
+}
+
+// MsgDelegateTokens is the request type for the Msg/DelegateTokens RPC method.
+message MsgDelegateTokens {
+  string delegator_address = 1;
+  int64 amount = 2;
+}
+
+// MsgDelegateTokensResponse is the response type for the Msg/DelegateTokens RPC method.
+message MsgDelegateTokensResponse {
+  // Typically, this might include a transaction hash or other response data.
 }
