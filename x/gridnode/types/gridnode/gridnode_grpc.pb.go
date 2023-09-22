@@ -19,91 +19,91 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_DelegatedAmount_FullMethodName = "/cosmossdkgridnode.gridnode.Query/DelegatedAmount"
+	GridnodeQuery_DelegatedAmount_FullMethodName = "/cosmossdkgridnode.gridnode.GridnodeQuery/DelegatedAmount"
 )
 
-// QueryClient is the client API for Query service.
+// GridnodeQueryClient is the client API for GridnodeQuery service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type QueryClient interface {
+type GridnodeQueryClient interface {
 	// DelegatedAmount queries the amount delegated by a specific account.
 	DelegatedAmount(ctx context.Context, in *QueryDelegatedAmountRequest, opts ...grpc.CallOption) (*QueryDelegatedAmountResponse, error)
 }
 
-type queryClient struct {
+type gridnodeQueryClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
-	return &queryClient{cc}
+func NewGridnodeQueryClient(cc grpc.ClientConnInterface) GridnodeQueryClient {
+	return &gridnodeQueryClient{cc}
 }
 
-func (c *queryClient) DelegatedAmount(ctx context.Context, in *QueryDelegatedAmountRequest, opts ...grpc.CallOption) (*QueryDelegatedAmountResponse, error) {
+func (c *gridnodeQueryClient) DelegatedAmount(ctx context.Context, in *QueryDelegatedAmountRequest, opts ...grpc.CallOption) (*QueryDelegatedAmountResponse, error) {
 	out := new(QueryDelegatedAmountResponse)
-	err := c.cc.Invoke(ctx, Query_DelegatedAmount_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, GridnodeQuery_DelegatedAmount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// QueryServer is the server API for Query service.
-// All implementations must embed UnimplementedQueryServer
+// GridnodeQueryServer is the server API for GridnodeQuery service.
+// All implementations must embed UnimplementedGridnodeQueryServer
 // for forward compatibility
-type QueryServer interface {
+type GridnodeQueryServer interface {
 	// DelegatedAmount queries the amount delegated by a specific account.
 	DelegatedAmount(context.Context, *QueryDelegatedAmountRequest) (*QueryDelegatedAmountResponse, error)
-	mustEmbedUnimplementedQueryServer()
+	mustEmbedUnimplementedGridnodeQueryServer()
 }
 
-// UnimplementedQueryServer must be embedded to have forward compatible implementations.
-type UnimplementedQueryServer struct {
+// UnimplementedGridnodeQueryServer must be embedded to have forward compatible implementations.
+type UnimplementedGridnodeQueryServer struct {
 }
 
-func (UnimplementedQueryServer) DelegatedAmount(context.Context, *QueryDelegatedAmountRequest) (*QueryDelegatedAmountResponse, error) {
+func (UnimplementedGridnodeQueryServer) DelegatedAmount(context.Context, *QueryDelegatedAmountRequest) (*QueryDelegatedAmountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegatedAmount not implemented")
 }
-func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
+func (UnimplementedGridnodeQueryServer) mustEmbedUnimplementedGridnodeQueryServer() {}
 
-// UnsafeQueryServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to QueryServer will
+// UnsafeGridnodeQueryServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GridnodeQueryServer will
 // result in compilation errors.
-type UnsafeQueryServer interface {
-	mustEmbedUnimplementedQueryServer()
+type UnsafeGridnodeQueryServer interface {
+	mustEmbedUnimplementedGridnodeQueryServer()
 }
 
-func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
-	s.RegisterService(&Query_ServiceDesc, srv)
+func RegisterGridnodeQueryServer(s grpc.ServiceRegistrar, srv GridnodeQueryServer) {
+	s.RegisterService(&GridnodeQuery_ServiceDesc, srv)
 }
 
-func _Query_DelegatedAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GridnodeQuery_DelegatedAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryDelegatedAmountRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).DelegatedAmount(ctx, in)
+		return srv.(GridnodeQueryServer).DelegatedAmount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Query_DelegatedAmount_FullMethodName,
+		FullMethod: GridnodeQuery_DelegatedAmount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).DelegatedAmount(ctx, req.(*QueryDelegatedAmountRequest))
+		return srv.(GridnodeQueryServer).DelegatedAmount(ctx, req.(*QueryDelegatedAmountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Query_ServiceDesc is the grpc.ServiceDesc for Query service.
+// GridnodeQuery_ServiceDesc is the grpc.ServiceDesc for GridnodeQuery service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Query_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cosmossdkgridnode.gridnode.Query",
-	HandlerType: (*QueryServer)(nil),
+var GridnodeQuery_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "cosmossdkgridnode.gridnode.GridnodeQuery",
+	HandlerType: (*GridnodeQueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "DelegatedAmount",
-			Handler:    _Query_DelegatedAmount_Handler,
+			Handler:    _GridnodeQuery_DelegatedAmount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

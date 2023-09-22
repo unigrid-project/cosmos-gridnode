@@ -93,7 +93,7 @@ func GetCmdQueryDelegatedAmount(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			defer conn.Close()
-			client := gridnode.NewQueryClient(conn)
+			client := gridnode.NewGridnodeQueryClient(conn)
 
 			// Make the gRPC request
 			req := &gridnode.QueryDelegatedAmountRequest{
