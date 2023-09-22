@@ -29,8 +29,8 @@ const (
 	FlagMetadata               = "metadata"
 )
 
-// GetTxCmd returns the transaction commands for this module
-func GetTxCmd() *cobra.Command {
+// NewTxCmd returns the transaction commands for this module
+func NewTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
@@ -39,14 +39,16 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(GetCmdDelegate())
-	cmd.AddCommand(GetCmdQueryDelegatedAmount())
-	cmd.AddCommand(NewCmdCastVoteFromGridnode())
+	cmd.AddCommand(
+		NewCmdDelegate(),
+		NewCmdQueryDelegatedAmount(),
+		NewCmdCastVoteFromGridnode(),
+	)
 
 	return cmd
 }
 
-func GetCmdDelegate() *cobra.Command {
+func NewCmdDelegate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delegate [delegator-address]",
 		Short: "Delegate tokens for gridnode",
@@ -131,7 +133,7 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 	return cmd
 }
 
-func GetCmdQueryDelegatedAmount() *cobra.Command {
+func NewCmdQueryDelegatedAmount() *cobra.Command {
 	return &cobra.Command{
 		Use:   "delegated-amount [delegator-address]",
 		Short: "Query the amount delegated by the specified account",
