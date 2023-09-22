@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -11,13 +12,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govutils "github.com/cosmos/cosmos-sdk/x/gov/client/utils"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/spf13/cobra"
+	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 	gridnode "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types/gridnode"
 	"google.golang.org/grpc"
-
-	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 )
 
 var (
@@ -111,6 +110,12 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 			byteVoteOption, err := v1.VoteOptionFromString(govutils.NormalizeVoteOption(args[1]))
 			if err != nil {
 				return err
+			}
+
+			// Check if it is GridNode
+			isNode := types.IsGridnode(from)
+			if !isNode {
+				return errors.New("address is not a GridNode")
 			}
 
 			// Build vote message and run basic validation
