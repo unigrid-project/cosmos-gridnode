@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -16,7 +15,6 @@ import (
 	gridnode "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types/gridnode"
 	"google.golang.org/grpc"
 
-	"github.com/cosmos/cosmos-sdk/version"
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
@@ -44,6 +42,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(GetCmdDelegate())
 	cmd.AddCommand(GetCmdQueryDelegatedAmount())
+	cmd.AddCommand(NewCmdCastVoteFromGridnode())
 
 	return cmd
 }
@@ -89,16 +88,6 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 		Use:   "cast-vote [proposal-id] [option]",
 		Short: "Cast a vote from a Gridnode, options: yes/no/no_with_veto/abstain",
 		Args:  cobra.ExactArgs(2),
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Submit a vote for an active proposal. You can
-find the proposal-id by running "%s query gov proposals".
-
-Example:
-$ %s tx gov vote 1 yes --from mykey
-`,
-				version.AppName, version.AppName,
-			),
-		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
