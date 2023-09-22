@@ -28,7 +28,6 @@ func NewHandler(am AppModule) sdk.Handler {
 func handleMsgDelegate(ctx sdk.Context, am AppModule, msg types.MsgDelegate) (*sdk.Result, error) {
 	coins := am.bankKeeper.SpendableCoins(ctx, msg.DelegatorAddress)
 	// Check if the delegator has enough coins to delegate
-	// Check if the delegator has enough coins to delegate
 	if coins.AmountOf("ugd").LT(sdk.NewInt(msg.Amount)) {
 		return nil, errors.Wrapf(types.ErrInsufficientFunds, "not enough coins to delegate")
 	}

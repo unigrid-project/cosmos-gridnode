@@ -51,15 +51,15 @@ func (MsgUndelegate) String() string {
 	panic("unimplemented")
 }
 
-func NewMsgDelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) MsgDelegate {
-	return MsgDelegate{
+func NewMsgDelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgDelegate {
+	return &MsgDelegate{
 		DelegatorAddress: delegatorAddress,
 		Amount:           amount,
 	}
 }
 
-func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) MsgUndelegate {
-	return MsgUndelegate{
+func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgUndelegate {
+	return &MsgUndelegate{
 		DelegatorAddress: delegatorAddress,
 		Amount:           amount,
 	}
@@ -67,11 +67,11 @@ func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) Msg
 
 // Implementing the sdk.Msg interface
 
-func (msg MsgDelegate) Route() string {
+func (msg *MsgDelegate) Route() string {
 	return RouterKey
 }
 
-func (msg MsgDelegate) Type() string {
+func (msg *MsgDelegate) Type() string {
 	return TypeMsgDelegate
 }
 
@@ -94,11 +94,11 @@ func (msg MsgDelegate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.DelegatorAddress}
 }
 
-func (msg MsgUndelegate) Route() string {
+func (msg *MsgUndelegate) Route() string {
 	return RouterKey
 }
 
-func (msg MsgUndelegate) Type() string {
+func (msg *MsgUndelegate) Type() string {
 	return "undelegate"
 }
 
