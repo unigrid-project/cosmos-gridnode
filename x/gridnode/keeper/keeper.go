@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 )
@@ -20,6 +22,7 @@ type (
 		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace
 		bankKeeper types.BankKeeper
+		govKeeper  types.GovKeeper
 	}
 )
 
@@ -110,4 +113,25 @@ func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, am
 	}
 	store.Set(k.keyForDelegator(delegator), amount.BigInt().Bytes())
 	fmt.Println("Set delegated amount for address", delegator, "to:", amount)
+}
+
+func (k Keeper) CastVoteFromGridnode(ctx sdk.Context, proposalID uint64, voterAddr sdk.AccAddress, option govtypes.VoteOption) error {
+	// Check if the voter is a Gridnode
+	if !k.IsGridnode(ctx, voterAddr) {
+		return errors.New("address is not a Gridnode")
+	}
+
+	// Use the x/gov keeper to add the vote
+	_, err := k.govKeeper.AddVote(ctx, proposalID, voterAddr, option)
+	return err
+}
+
+func (k Keeper) IsGridnode(ctx sdk.Context, voterAddr sdk.AccAddress) bool {
+	res := true
+
+	if res {
+		return true
+	}
+
+	return false
 }
