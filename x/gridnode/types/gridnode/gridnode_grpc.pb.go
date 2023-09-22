@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	GridnodeQuery_DelegatedAmount_FullMethodName = "/cosmossdkgridnode.gridnode.GridnodeQuery/DelegatedAmount"
+	GridnodeQuery_DelegatedAmount_FullMethodName  = "/cosmossdkgridnode.gridnode.GridnodeQuery/DelegatedAmount"
+	GridnodeQuery_UndelegateTokens_FullMethodName = "/cosmossdkgridnode.gridnode.GridnodeQuery/UndelegateTokens"
 )
 
 // GridnodeQueryClient is the client API for GridnodeQuery service.
@@ -28,6 +29,7 @@ const (
 type GridnodeQueryClient interface {
 	// DelegatedAmount queries the amount delegated by a specific account.
 	DelegatedAmount(ctx context.Context, in *QueryDelegatedAmountRequest, opts ...grpc.CallOption) (*QueryDelegatedAmountResponse, error)
+	UndelegateTokens(ctx context.Context, in *MsgGridnodeUndelegate, opts ...grpc.CallOption) (*MsgGridnodeUndelegateResponse, error)
 }
 
 type gridnodeQueryClient struct {
@@ -47,12 +49,22 @@ func (c *gridnodeQueryClient) DelegatedAmount(ctx context.Context, in *QueryDele
 	return out, nil
 }
 
+func (c *gridnodeQueryClient) UndelegateTokens(ctx context.Context, in *MsgGridnodeUndelegate, opts ...grpc.CallOption) (*MsgGridnodeUndelegateResponse, error) {
+	out := new(MsgGridnodeUndelegateResponse)
+	err := c.cc.Invoke(ctx, GridnodeQuery_UndelegateTokens_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GridnodeQueryServer is the server API for GridnodeQuery service.
 // All implementations must embed UnimplementedGridnodeQueryServer
 // for forward compatibility
 type GridnodeQueryServer interface {
 	// DelegatedAmount queries the amount delegated by a specific account.
 	DelegatedAmount(context.Context, *QueryDelegatedAmountRequest) (*QueryDelegatedAmountResponse, error)
+	UndelegateTokens(context.Context, *MsgGridnodeUndelegate) (*MsgGridnodeUndelegateResponse, error)
 	mustEmbedUnimplementedGridnodeQueryServer()
 }
 
@@ -62,6 +74,9 @@ type UnimplementedGridnodeQueryServer struct {
 
 func (UnimplementedGridnodeQueryServer) DelegatedAmount(context.Context, *QueryDelegatedAmountRequest) (*QueryDelegatedAmountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegatedAmount not implemented")
+}
+func (UnimplementedGridnodeQueryServer) UndelegateTokens(context.Context, *MsgGridnodeUndelegate) (*MsgGridnodeUndelegateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UndelegateTokens not implemented")
 }
 func (UnimplementedGridnodeQueryServer) mustEmbedUnimplementedGridnodeQueryServer() {}
 
@@ -94,6 +109,24 @@ func _GridnodeQuery_DelegatedAmount_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GridnodeQuery_UndelegateTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGridnodeUndelegate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GridnodeQueryServer).UndelegateTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GridnodeQuery_UndelegateTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GridnodeQueryServer).UndelegateTokens(ctx, req.(*MsgGridnodeUndelegate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GridnodeQuery_ServiceDesc is the grpc.ServiceDesc for GridnodeQuery service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -104,6 +137,10 @@ var GridnodeQuery_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DelegatedAmount",
 			Handler:    _GridnodeQuery_DelegatedAmount_Handler,
+		},
+		{
+			MethodName: "UndelegateTokens",
+			Handler:    _GridnodeQuery_UndelegateTokens_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
