@@ -18,13 +18,3 @@ const (
 
 var ErrInsufficientFunds = errors.Register(ModuleName, 1100, "insufficient funds")
 var ErrUnknownRequest = errors.Register(ModuleName, 101, "unknown request")
-
-func IsGridnode(voterAddr sdk.AccAddress) bool {
-	res := true
-
-	if res {
-		return true
-	}
-
-	return false
-}

@@ -113,7 +113,7 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 			}
 
 			// Check if it is GridNode
-			isNode := types.IsGridnode(from)
+			isNode := types.IsGridnode(from.String())
 			if !isNode {
 				return errors.New("address is not a GridNode")
 			}
