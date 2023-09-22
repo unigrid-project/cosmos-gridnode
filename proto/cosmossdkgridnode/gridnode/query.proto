@@ -1,18 +1,22 @@
 syntax = "proto3";
 package cosmossdkgridnode.gridnode;
 
-import "cosmos/base/query/v1beta1/pagination.proto";
-import "cosmossdkgridnode/gridnode/params.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "cosmossdkgridnode/gridnode/params.proto";
 
 option go_package = "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types";
 
-// Query defines the gRPC querier service.
+// Query defines the gRPC querier service for gridnode module.
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/unigrid-project/cosmos-sdk-gridnode/gridnode/params";
+  }
+
+  // DelegatedAmount queries the amount delegated by a specific account.
+  rpc DelegatedAmount(QueryDelegatedAmountRequest) returns (QueryDelegatedAmountResponse) {
+    option (google.api.http).get = "/unigrid-project/cosmos-sdk-gridnode/gridnode/delegated-amount/{delegator_address}";
   }
 }
 
@@ -23,4 +27,35 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// Msg defines the Msg service for gridnode module.
+service GridnodeMsg {
+  rpc DelegateTokens(MsgDelegateTokens) returns (MsgDelegateTokensResponse);
+}
+
+// QueryDelegatedAmountRequest is the request type for the Query/DelegatedAmount RPC method.
+message QueryDelegatedAmountRequest {
+  string delegator_address = 1;
+}
+
+// QueryDelegatedAmountResponse is the response type for the Query/DelegatedAmount RPC method.
+message QueryDelegatedAmountResponse {
+  int64 amount = 1;
+}
+
+message Delegation {
+  string delegator_address = 1;
+  int64 amount = 2;
+}
+
+// MsgDelegateTokens is the request type for the Msg/DelegateTokens RPC method.
+message MsgDelegateTokens {
+  string delegator_address = 1;
+  int64 amount = 2;
+}
+
+// MsgDelegateTokensResponse is the response type for the Msg/DelegateTokens RPC method.
+message MsgDelegateTokensResponse {
+  // Typically, this might include a transaction hash or other response data.
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
-	gridnode "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types/gridnode"
+	gridnode "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 	"google.golang.org/grpc"
 
 	// "github.com/cosmos/cosmos-sdk/client/flags"
