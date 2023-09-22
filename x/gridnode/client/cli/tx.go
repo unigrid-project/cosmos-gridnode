@@ -50,8 +50,9 @@ func GetTxCmd() *cobra.Command {
 
 func GetCmdDelegate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "delegate",
+		Use:   "delegate [delegator-address]",
 		Short: "Delegate tokens for gridnode",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -63,8 +64,13 @@ func GetCmdDelegate() *cobra.Command {
 				return err
 			}
 
+			// Convert the first argument to an AccAddress
+			delegatorAddress, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
 			// Create the message
-			delegatorAddress := clientCtx.GetFromAddress()
 			msg := types.NewMsgDelegateGridnode(delegatorAddress, amount)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)

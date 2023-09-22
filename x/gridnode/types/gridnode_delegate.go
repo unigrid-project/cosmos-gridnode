@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -74,6 +76,7 @@ func (msg MsgDelegate) Type() string {
 }
 
 func (msg MsgDelegate) ValidateBasic() error {
+	fmt.Println("Delegator Address:", msg.DelegatorAddress)
 	if msg.DelegatorAddress.Empty() {
 		return sdkerrors.ErrInvalidAddress
 	}
@@ -100,6 +103,7 @@ func (msg MsgUndelegate) Type() string {
 }
 
 func (msg MsgUndelegate) ValidateBasic() error {
+	fmt.Println("Delegator Address:", msg.DelegatorAddress)
 	if msg.DelegatorAddress.Empty() {
 		return sdkerrors.ErrInvalidAddress
 	}
