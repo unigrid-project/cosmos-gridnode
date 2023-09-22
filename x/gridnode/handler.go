@@ -13,9 +13,9 @@ import (
 func NewHandler(am AppModule) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
-		case types.MsgDelegate:
+		case types.MsgGridnodeDelegate:
 			return handleMsgDelegate(ctx, am, msg)
-		case types.MsgUndelegate:
+		case types.MsgGridnodeUndelegate:
 			return handleMsgUndelegate(ctx, am.keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
@@ -25,7 +25,7 @@ func NewHandler(am AppModule) sdk.Handler {
 	}
 }
 
-func handleMsgDelegate(ctx sdk.Context, am AppModule, msg types.MsgDelegate) (*sdk.Result, error) {
+func handleMsgDelegate(ctx sdk.Context, am AppModule, msg types.MsgGridnodeDelegate) (*sdk.Result, error) {
 	coins := am.bankKeeper.SpendableCoins(ctx, msg.DelegatorAddress)
 	// Check if the delegator has enough coins to delegate
 	if coins.AmountOf("ugd").LT(sdk.NewInt(msg.Amount)) {
@@ -48,8 +48,8 @@ func handleMsgDelegate(ctx sdk.Context, am AppModule, msg types.MsgDelegate) (*s
 	return &sdk.Result{Events: ctx.EventManager().ABCIEvents()}, nil
 }
 
-func handleMsgUndelegate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUndelegate) (*sdk.Result, error) {
-	// Your logic for handling the MsgUndelegate message goes here
+func handleMsgUndelegate(ctx sdk.Context, k keeper.Keeper, msg types.MsgGridnodeUndelegate) (*sdk.Result, error) {
+	// Your logic for handling the MsgGridnodeUndelegate message goes here
 	fmt.Println("handleMsgUndelegate: ", msg)
 	return &sdk.Result{}, nil
 }

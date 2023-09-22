@@ -12,54 +12,54 @@ const (
 	TypeMsgDelegate = "delegate"
 )
 
-type MsgDelegate struct {
+type MsgGridnodeDelegate struct {
 	DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
 	Amount           int64          `json:"amount" yaml:"amount"`
 }
 
-type MsgUndelegate struct {
+type MsgGridnodeUndelegate struct {
 	DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
 	Amount           int64          `json:"amount" yaml:"amount"`
 }
 
 // ProtoMessage implements types.Msg.
-func (MsgDelegate) ProtoMessage() {
+func (MsgGridnodeDelegate) ProtoMessage() {
 	panic("unimplemented")
 }
 
 // Reset implements types.Msg.
-func (MsgDelegate) Reset() {
+func (MsgGridnodeDelegate) Reset() {
 	panic("unimplemented")
 }
 
 // String implements types.Msg.
-func (MsgDelegate) String() string {
+func (MsgGridnodeDelegate) String() string {
 	panic("unimplemented")
 }
 
-func (MsgUndelegate) ProtoMessage() {
+func (MsgGridnodeUndelegate) ProtoMessage() {
 	panic("unimplemented")
 }
 
 // Reset implements types.Msg.
-func (MsgUndelegate) Reset() {
+func (MsgGridnodeUndelegate) Reset() {
 	panic("unimplemented")
 }
 
 // String implements types.Msg.
-func (MsgUndelegate) String() string {
+func (MsgGridnodeUndelegate) String() string {
 	panic("unimplemented")
 }
 
-func NewMsgDelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgDelegate {
-	return &MsgDelegate{
+func NewMsgDelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgGridnodeDelegate {
+	return &MsgGridnodeDelegate{
 		DelegatorAddress: delegatorAddress,
 		Amount:           amount,
 	}
 }
 
-func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgUndelegate {
-	return &MsgUndelegate{
+func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgGridnodeUndelegate {
+	return &MsgGridnodeUndelegate{
 		DelegatorAddress: delegatorAddress,
 		Amount:           amount,
 	}
@@ -67,15 +67,15 @@ func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *Ms
 
 // Implementing the sdk.Msg interface
 
-func (msg *MsgDelegate) Route() string {
+func (msg *MsgGridnodeDelegate) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgDelegate) Type() string {
+func (msg *MsgGridnodeDelegate) Type() string {
 	return TypeMsgDelegate
 }
 
-func (msg MsgDelegate) ValidateBasic() error {
+func (msg MsgGridnodeDelegate) ValidateBasic() error {
 	fmt.Println("Delegator Address:", msg.DelegatorAddress)
 	if msg.DelegatorAddress.Empty() {
 		return sdkerrors.ErrInvalidAddress
@@ -86,23 +86,23 @@ func (msg MsgDelegate) ValidateBasic() error {
 	return nil
 }
 
-func (msg MsgDelegate) GetSignBytes() []byte {
+func (msg MsgGridnodeDelegate) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgDelegate) GetSigners() []sdk.AccAddress {
+func (msg MsgGridnodeDelegate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.DelegatorAddress}
 }
 
-func (msg *MsgUndelegate) Route() string {
+func (msg *MsgGridnodeUndelegate) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUndelegate) Type() string {
+func (msg *MsgGridnodeUndelegate) Type() string {
 	return "undelegate"
 }
 
-func (msg MsgUndelegate) ValidateBasic() error {
+func (msg MsgGridnodeUndelegate) ValidateBasic() error {
 	fmt.Println("Delegator Address:", msg.DelegatorAddress)
 	if msg.DelegatorAddress.Empty() {
 		return sdkerrors.ErrInvalidAddress
@@ -113,10 +113,10 @@ func (msg MsgUndelegate) ValidateBasic() error {
 	return nil
 }
 
-func (msg MsgUndelegate) GetSignBytes() []byte {
+func (msg MsgGridnodeUndelegate) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgUndelegate) GetSigners() []sdk.AccAddress {
+func (msg MsgGridnodeUndelegate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.DelegatorAddress}
 }

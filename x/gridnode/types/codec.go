@@ -16,8 +16,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgDelegate{},
-		&MsgUndelegate{},
+		&MsgGridnodeDelegate{},
+		&MsgGridnodeUndelegate{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

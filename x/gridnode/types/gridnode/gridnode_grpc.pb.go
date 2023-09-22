@@ -118,7 +118,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GridnodeMsgClient interface {
-	DelegateTokens(ctx context.Context, in *MsgDelegateTokens, opts ...grpc.CallOption) (*MsgDelegateTokensResponse, error)
+	DelegateTokens(ctx context.Context, in *MsgGridnodeDelegate, opts ...grpc.CallOption) (*MsgGridnodeDelegateResponse, error)
 }
 
 type gridnodeMsgClient struct {
@@ -129,8 +129,8 @@ func NewGridnodeMsgClient(cc grpc.ClientConnInterface) GridnodeMsgClient {
 	return &gridnodeMsgClient{cc}
 }
 
-func (c *gridnodeMsgClient) DelegateTokens(ctx context.Context, in *MsgDelegateTokens, opts ...grpc.CallOption) (*MsgDelegateTokensResponse, error) {
-	out := new(MsgDelegateTokensResponse)
+func (c *gridnodeMsgClient) DelegateTokens(ctx context.Context, in *MsgGridnodeDelegate, opts ...grpc.CallOption) (*MsgGridnodeDelegateResponse, error) {
+	out := new(MsgGridnodeDelegateResponse)
 	err := c.cc.Invoke(ctx, GridnodeMsg_DelegateTokens_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -142,7 +142,7 @@ func (c *gridnodeMsgClient) DelegateTokens(ctx context.Context, in *MsgDelegateT
 // All implementations must embed UnimplementedGridnodeMsgServer
 // for forward compatibility
 type GridnodeMsgServer interface {
-	DelegateTokens(context.Context, *MsgDelegateTokens) (*MsgDelegateTokensResponse, error)
+	DelegateTokens(context.Context, *MsgGridnodeDelegate) (*MsgGridnodeDelegateResponse, error)
 	mustEmbedUnimplementedGridnodeMsgServer()
 }
 
@@ -150,7 +150,7 @@ type GridnodeMsgServer interface {
 type UnimplementedGridnodeMsgServer struct {
 }
 
-func (UnimplementedGridnodeMsgServer) DelegateTokens(context.Context, *MsgDelegateTokens) (*MsgDelegateTokensResponse, error) {
+func (UnimplementedGridnodeMsgServer) DelegateTokens(context.Context, *MsgGridnodeDelegate) (*MsgGridnodeDelegateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelegateTokens not implemented")
 }
 func (UnimplementedGridnodeMsgServer) mustEmbedUnimplementedGridnodeMsgServer() {}
@@ -167,7 +167,7 @@ func RegisterGridnodeMsgServer(s grpc.ServiceRegistrar, srv GridnodeMsgServer) {
 }
 
 func _GridnodeMsg_DelegateTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDelegateTokens)
+	in := new(MsgGridnodeDelegate)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func _GridnodeMsg_DelegateTokens_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: GridnodeMsg_DelegateTokens_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GridnodeMsgServer).DelegateTokens(ctx, req.(*MsgDelegateTokens))
+		return srv.(GridnodeMsgServer).DelegateTokens(ctx, req.(*MsgGridnodeDelegate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
