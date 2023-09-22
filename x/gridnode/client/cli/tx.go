@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	gridnode "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types/gridnode"
@@ -37,7 +36,8 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	// this line is used by starport scaffolding # 1
+	cmd.AddCommand(GetCmdDelegate())
+	cmd.AddCommand(GetCmdQueryDelegatedAmount())
 
 	return cmd
 }
@@ -72,7 +72,7 @@ func GetCmdDelegate() *cobra.Command {
 	return cmd
 }
 
-func GetCmdQueryDelegatedAmount(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryDelegatedAmount() *cobra.Command {
 	return &cobra.Command{
 		Use:   "delegated-amount [delegator-address]",
 		Short: "Query the amount delegated by the specified account",
