@@ -9,7 +9,7 @@ import (
 
 const (
 	// Define constants for your module's message types and routes
-	TypeMsgDelegate = "delegate"
+	TypeMsgDelegate = "delegategridnode"
 )
 
 type MsgGridnodeDelegate struct {
@@ -52,6 +52,7 @@ func (MsgGridnodeUndelegate) String() string {
 }
 
 func NewMsgDelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgGridnodeDelegate {
+	fmt.Println("NewMsgDelegateGridnode: ", delegatorAddress, amount)
 	return &MsgGridnodeDelegate{
 		DelegatorAddress: delegatorAddress,
 		Amount:           amount,
@@ -68,10 +69,14 @@ func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *Ms
 // Implementing the sdk.Msg interface
 
 func (msg *MsgGridnodeDelegate) Route() string {
+	fmt.Println("Route:", RouterKey)
+	fmt.Println("msg:", msg)
 	return RouterKey
 }
 
 func (msg *MsgGridnodeDelegate) Type() string {
+	fmt.Println("TypeMsgDelegate:", TypeMsgDelegate)
+	fmt.Println("msg:", msg)
 	return TypeMsgDelegate
 }
 
