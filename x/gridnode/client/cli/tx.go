@@ -15,7 +15,6 @@ import (
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/spf13/cobra"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
-	gridnode "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types/gridnode"
 	"google.golang.org/grpc"
 )
 
@@ -154,10 +153,10 @@ func NewCmdQueryDelegatedAmount() *cobra.Command {
 				return err
 			}
 			defer conn.Close()
-			client := gridnode.NewGridnodeQueryClient(conn)
+			client := types.NewGridnodeQueryClient(conn)
 
 			// Make the gRPC request
-			req := &gridnode.QueryDelegatedAmountRequest{
+			req := &types.QueryDelegatedAmountRequest{
 				DelegatorAddress: delegatorAddr.String(),
 			}
 			res, err := client.DelegatedAmount(context.Background(), req)
@@ -166,7 +165,7 @@ func NewCmdQueryDelegatedAmount() *cobra.Command {
 			}
 			// Handle the response
 			amount := res.Amount
-			response := &gridnode.QueryDelegatedAmountResponse{
+			response := &types.QueryDelegatedAmountResponse{
 				Amount: amount,
 			}
 

@@ -12,56 +12,56 @@ const (
 	TypeMsgDelegate = "delegategridnode"
 )
 
-type MsgGridnodeDelegate struct {
-	DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
-	Amount           int64          `json:"amount" yaml:"amount"`
-}
+// type MsgGridnodeDelegate struct {
+// 	DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
+// 	Amount           int64          `json:"amount" yaml:"amount"`
+// }
 
-type MsgGridnodeUndelegate struct {
-	DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
-	Amount           int64          `json:"amount" yaml:"amount"`
-}
+// type MsgGridnodeUndelegate struct {
+// 	DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
+// 	Amount           int64          `json:"amount" yaml:"amount"`
+// }
 
 // ProtoMessage implements types.Msg.
-func (MsgGridnodeDelegate) ProtoMessage() {
-	panic("unimplemented")
-}
+// func (MsgGridnodeDelegate) ProtoMessage() {
+// 	panic("unimplemented")
+// }
 
-// Reset implements types.Msg.
-func (MsgGridnodeDelegate) Reset() {
-	panic("unimplemented")
-}
+// // Reset implements types.Msg.
+// func (MsgGridnodeDelegate) Reset() {
+// 	panic("unimplemented")
+// }
 
-// String implements types.Msg.
-func (MsgGridnodeDelegate) String() string {
-	panic("unimplemented")
-}
+// // String implements types.Msg.
+// func (MsgGridnodeDelegate) String() string {
+// 	panic("unimplemented")
+// }
 
-func (MsgGridnodeUndelegate) ProtoMessage() {
-	panic("unimplemented")
-}
+// func (MsgGridnodeUndelegate) ProtoMessage() {
+// 	panic("unimplemented")
+// }
 
-// Reset implements types.Msg.
-func (MsgGridnodeUndelegate) Reset() {
-	panic("unimplemented")
-}
+// // Reset implements types.Msg.
+// func (MsgGridnodeUndelegate) Reset() {
+// 	panic("unimplemented")
+// }
 
-// String implements types.Msg.
-func (MsgGridnodeUndelegate) String() string {
-	panic("unimplemented")
-}
+// // String implements types.Msg.
+// func (MsgGridnodeUndelegate) String() string {
+// 	panic("unimplemented")
+// }
 
 func NewMsgDelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgGridnodeDelegate {
 	fmt.Println("NewMsgDelegateGridnode: ", delegatorAddress, amount)
 	return &MsgGridnodeDelegate{
-		DelegatorAddress: delegatorAddress,
+		DelegatorAddress: delegatorAddress.String(), // Convert to string
 		Amount:           amount,
 	}
 }
 
 func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgGridnodeUndelegate {
 	return &MsgGridnodeUndelegate{
-		DelegatorAddress: delegatorAddress,
+		DelegatorAddress: delegatorAddress.String(), // Convert to string
 		Amount:           amount,
 	}
 }
@@ -82,7 +82,7 @@ func (msg *MsgGridnodeDelegate) Type() string {
 
 func (msg MsgGridnodeDelegate) ValidateBasic() error {
 	fmt.Println("Delegator Address:", msg.DelegatorAddress)
-	if msg.DelegatorAddress.Empty() {
+	if msg.DelegatorAddress == "" {
 		return sdkerrors.ErrInvalidAddress
 	}
 	if msg.Amount <= 0 {
@@ -96,7 +96,11 @@ func (msg MsgGridnodeDelegate) GetSignBytes() []byte {
 }
 
 func (msg MsgGridnodeDelegate) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.DelegatorAddress}
+	delegatorAddr, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{delegatorAddr}
 }
 
 func (msg *MsgGridnodeUndelegate) Route() string {
@@ -109,7 +113,7 @@ func (msg *MsgGridnodeUndelegate) Type() string {
 
 func (msg MsgGridnodeUndelegate) ValidateBasic() error {
 	fmt.Println("Delegator Address:", msg.DelegatorAddress)
-	if msg.DelegatorAddress.Empty() {
+	if msg.DelegatorAddress == "" {
 		return sdkerrors.ErrInvalidAddress
 	}
 	if msg.Amount <= 0 {
@@ -123,5 +127,9 @@ func (msg MsgGridnodeUndelegate) GetSignBytes() []byte {
 }
 
 func (msg MsgGridnodeUndelegate) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.DelegatorAddress}
+	delegatorAddr, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{delegatorAddr}
 }
