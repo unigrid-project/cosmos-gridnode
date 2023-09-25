@@ -51,10 +51,10 @@ const (
 // 	panic("unimplemented")
 // }
 
-func NewMsgDelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgGridnodeDelegate {
+func NewMsgDelegateGridnode(delegatorAddress string, amount int64) *MsgGridnodeDelegate {
 	fmt.Println("NewMsgDelegateGridnode: ", delegatorAddress, amount)
 	return &MsgGridnodeDelegate{
-		DelegatorAddress: delegatorAddress.String(), // Convert to string
+		DelegatorAddress: delegatorAddress,
 		Amount:           amount,
 	}
 }

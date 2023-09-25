@@ -63,14 +63,8 @@ func NewCmdDelegate() *cobra.Command {
 				return err
 			}
 
-			// Convert the first argument to an AccAddress
-			delegatorAddress, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
-
 			// Create the message
-			msg := types.NewMsgDelegateGridnode(delegatorAddress, amount)
+			msg := types.NewMsgDelegateGridnode(args[0], amount)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
