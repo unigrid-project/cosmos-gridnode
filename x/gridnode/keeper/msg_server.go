@@ -8,6 +8,7 @@ import (
 )
 
 type msgServer struct {
+	types.UnimplementedGridnodeMsgServer
 	Keeper
 }
 
