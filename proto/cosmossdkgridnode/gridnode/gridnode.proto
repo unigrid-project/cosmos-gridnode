@@ -42,7 +42,8 @@ message MsgGridnodeDelegate {
 
 // MsgGridnodeDelegateResponse is the response type for the Msg/DelegateTokens RPC method.
 message MsgGridnodeDelegateResponse {
-  // Typically, this might include a transaction hash or other response data.
+  string tx_hash = 1; // Transaction hash of the delegated tokens operation
+  string status = 2;  // Status of the operation, e.g., "success" or "failure"
 }
 
 message MsgGridnodeUndelegate {
@@ -51,5 +52,6 @@ message MsgGridnodeUndelegate {
 }
 
 message MsgGridnodeUndelegateResponse {
-  // Typically, this might include a transaction hash or other response data.
+  string tx_hash = 1; // Transaction hash of the delegated tokens operation
+  string status = 2;  // Status of the operation, e.g., "success" or "failure"
 }
