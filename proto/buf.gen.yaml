@@ -1,11 +1,8 @@
 version: v1
 plugins:
-  - name: gogo
+  - name: go
     out: .
-    opt: 
-      - Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types
-      - Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types
-      - Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types
-      - Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types
-      - Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types
-      - paths=source_relative
+    opt: paths=source_relative
+  - name: go-grpc
+    out: .
+    opt: paths=source_relative,require_unimplemented_servers=false
