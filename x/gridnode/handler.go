@@ -14,6 +14,7 @@ func NewHandler(am AppModule) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
 		case *types.MsgGridnodeDelegate:
+			fmt.Println("MsgGridnodeDelegate received in NewHandler: ", msg)
 			return handleMsgDelegate(ctx, am, msg)
 		case *types.MsgGridnodeUndelegate:
 			return handleMsgUndelegate(ctx, am.keeper, msg)
