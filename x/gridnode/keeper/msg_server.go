@@ -13,7 +13,7 @@ type msgServer struct {
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
 // for the provided Keeper.
-func NewMsgServerImpl(keeper *Keeper) types.MsgServer {
+func NewMsgServerImpl(keeper *Keeper) types.GridnodeMsgServer {
 	return &msgServer{Keeper: *keeper}
 }
 
