@@ -53,6 +53,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // DelegateTokens locks the tokens for gridnode delegation
 func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) error {
 	// Deduct tokens from user's balance
+	fmt.Println("DelegateTokens: ", delegator, amount)
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, delegator, types.ModuleName, sdk.NewCoins(sdk.NewCoin("ugd", amount)))
 	if err != nil {
 		return err

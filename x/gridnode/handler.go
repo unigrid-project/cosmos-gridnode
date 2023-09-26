@@ -26,6 +26,7 @@ func NewHandler(am AppModule) sdk.Handler {
 }
 
 func handleMsgDelegate(ctx sdk.Context, am AppModule, msg *types.MsgGridnodeDelegate) (*sdk.Result, error) {
+	fmt.Println("handleMsgDelegate: ", msg)
 	delegatorAddr, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
 	if err != nil {
 		return nil, err
