@@ -4,10 +4,17 @@
 package types
 
 import (
+	context "context"
 	fmt "fmt"
-	proto "github.com/gogo/protobuf/proto"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	io "io"
 	math "math"
+	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -23,10 +30,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // QueryDelegatedAmountRequest is the request type for the Query/DelegatedAmount RPC method.
 type QueryDelegatedAmountRequest struct {
-	DelegatorAddress     string   `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
 }
 
 func (m *QueryDelegatedAmountRequest) Reset()         { *m = QueryDelegatedAmountRequest{} }
@@ -36,16 +40,25 @@ func (*QueryDelegatedAmountRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3881f22d050822b3, []int{0}
 }
 func (m *QueryDelegatedAmountRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_QueryDelegatedAmountRequest.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 func (m *QueryDelegatedAmountRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_QueryDelegatedAmountRequest.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_QueryDelegatedAmountRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 func (m *QueryDelegatedAmountRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryDelegatedAmountRequest.Merge(m, src)
 }
 func (m *QueryDelegatedAmountRequest) XXX_Size() int {
-	return xxx_messageInfo_QueryDelegatedAmountRequest.Size(m)
+	return m.Size()
 }
 func (m *QueryDelegatedAmountRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_QueryDelegatedAmountRequest.DiscardUnknown(m)
@@ -62,10 +75,7 @@ func (m *QueryDelegatedAmountRequest) GetDelegatorAddress() string {
 
 // QueryDelegatedAmountResponse is the response type for the Query/DelegatedAmount RPC method.
 type QueryDelegatedAmountResponse struct {
-	Amount               int64    `protobuf:"varint,1,opt,name=amount,proto3" json:"amount,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Amount int64 `protobuf:"varint,1,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (m *QueryDelegatedAmountResponse) Reset()         { *m = QueryDelegatedAmountResponse{} }
@@ -75,16 +85,25 @@ func (*QueryDelegatedAmountResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3881f22d050822b3, []int{1}
 }
 func (m *QueryDelegatedAmountResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_QueryDelegatedAmountResponse.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 func (m *QueryDelegatedAmountResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_QueryDelegatedAmountResponse.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_QueryDelegatedAmountResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 func (m *QueryDelegatedAmountResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryDelegatedAmountResponse.Merge(m, src)
 }
 func (m *QueryDelegatedAmountResponse) XXX_Size() int {
-	return xxx_messageInfo_QueryDelegatedAmountResponse.Size(m)
+	return m.Size()
 }
 func (m *QueryDelegatedAmountResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_QueryDelegatedAmountResponse.DiscardUnknown(m)
@@ -100,11 +119,8 @@ func (m *QueryDelegatedAmountResponse) GetAmount() int64 {
 }
 
 type Delegation struct {
-	DelegatorAddress     string   `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
-	Amount               int64    `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
+	Amount           int64  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (m *Delegation) Reset()         { *m = Delegation{} }
@@ -114,16 +130,25 @@ func (*Delegation) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3881f22d050822b3, []int{2}
 }
 func (m *Delegation) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Delegation.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 func (m *Delegation) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Delegation.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_Delegation.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 func (m *Delegation) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Delegation.Merge(m, src)
 }
 func (m *Delegation) XXX_Size() int {
-	return xxx_messageInfo_Delegation.Size(m)
+	return m.Size()
 }
 func (m *Delegation) XXX_DiscardUnknown() {
 	xxx_messageInfo_Delegation.DiscardUnknown(m)
@@ -147,11 +172,8 @@ func (m *Delegation) GetAmount() int64 {
 
 // MsgGridnodeDelegate is the request type for the Msg/DelegateTokens RPC method.
 type MsgGridnodeDelegate struct {
-	DelegatorAddress     string   `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
-	Amount               int64    `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
+	Amount           int64  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (m *MsgGridnodeDelegate) Reset()         { *m = MsgGridnodeDelegate{} }
@@ -161,16 +183,25 @@ func (*MsgGridnodeDelegate) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3881f22d050822b3, []int{3}
 }
 func (m *MsgGridnodeDelegate) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_MsgGridnodeDelegate.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 func (m *MsgGridnodeDelegate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_MsgGridnodeDelegate.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_MsgGridnodeDelegate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 func (m *MsgGridnodeDelegate) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgGridnodeDelegate.Merge(m, src)
 }
 func (m *MsgGridnodeDelegate) XXX_Size() int {
-	return xxx_messageInfo_MsgGridnodeDelegate.Size(m)
+	return m.Size()
 }
 func (m *MsgGridnodeDelegate) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgGridnodeDelegate.DiscardUnknown(m)
@@ -194,11 +225,8 @@ func (m *MsgGridnodeDelegate) GetAmount() int64 {
 
 // MsgGridnodeDelegateResponse is the response type for the Msg/DelegateTokens RPC method.
 type MsgGridnodeDelegateResponse struct {
-	TxHash               string   `protobuf:"bytes,1,opt,name=tx_hash,json=txHash,proto3" json:"tx_hash,omitempty"`
-	Status               string   `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	TxHash string `protobuf:"bytes,1,opt,name=tx_hash,json=txHash,proto3" json:"tx_hash,omitempty"`
+	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *MsgGridnodeDelegateResponse) Reset()         { *m = MsgGridnodeDelegateResponse{} }
@@ -208,16 +236,25 @@ func (*MsgGridnodeDelegateResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3881f22d050822b3, []int{4}
 }
 func (m *MsgGridnodeDelegateResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_MsgGridnodeDelegateResponse.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 func (m *MsgGridnodeDelegateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_MsgGridnodeDelegateResponse.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_MsgGridnodeDelegateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 func (m *MsgGridnodeDelegateResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgGridnodeDelegateResponse.Merge(m, src)
 }
 func (m *MsgGridnodeDelegateResponse) XXX_Size() int {
-	return xxx_messageInfo_MsgGridnodeDelegateResponse.Size(m)
+	return m.Size()
 }
 func (m *MsgGridnodeDelegateResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgGridnodeDelegateResponse.DiscardUnknown(m)
@@ -240,11 +277,8 @@ func (m *MsgGridnodeDelegateResponse) GetStatus() string {
 }
 
 type MsgGridnodeUndelegate struct {
-	DelegatorAddress     string   `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
-	Amount               int64    `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
+	Amount           int64  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (m *MsgGridnodeUndelegate) Reset()         { *m = MsgGridnodeUndelegate{} }
@@ -254,16 +288,25 @@ func (*MsgGridnodeUndelegate) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3881f22d050822b3, []int{5}
 }
 func (m *MsgGridnodeUndelegate) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_MsgGridnodeUndelegate.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 func (m *MsgGridnodeUndelegate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_MsgGridnodeUndelegate.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_MsgGridnodeUndelegate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 func (m *MsgGridnodeUndelegate) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgGridnodeUndelegate.Merge(m, src)
 }
 func (m *MsgGridnodeUndelegate) XXX_Size() int {
-	return xxx_messageInfo_MsgGridnodeUndelegate.Size(m)
+	return m.Size()
 }
 func (m *MsgGridnodeUndelegate) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgGridnodeUndelegate.DiscardUnknown(m)
@@ -286,11 +329,8 @@ func (m *MsgGridnodeUndelegate) GetAmount() int64 {
 }
 
 type MsgGridnodeUndelegateResponse struct {
-	TxHash               string   `protobuf:"bytes,1,opt,name=tx_hash,json=txHash,proto3" json:"tx_hash,omitempty"`
-	Status               string   `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	TxHash string `protobuf:"bytes,1,opt,name=tx_hash,json=txHash,proto3" json:"tx_hash,omitempty"`
+	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *MsgGridnodeUndelegateResponse) Reset()         { *m = MsgGridnodeUndelegateResponse{} }
@@ -300,16 +340,25 @@ func (*MsgGridnodeUndelegateResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3881f22d050822b3, []int{6}
 }
 func (m *MsgGridnodeUndelegateResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_MsgGridnodeUndelegateResponse.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 func (m *MsgGridnodeUndelegateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_MsgGridnodeUndelegateResponse.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_MsgGridnodeUndelegateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 func (m *MsgGridnodeUndelegateResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_MsgGridnodeUndelegateResponse.Merge(m, src)
 }
 func (m *MsgGridnodeUndelegateResponse) XXX_Size() int {
-	return xxx_messageInfo_MsgGridnodeUndelegateResponse.Size(m)
+	return m.Size()
 }
 func (m *MsgGridnodeUndelegateResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_MsgGridnodeUndelegateResponse.DiscardUnknown(m)
@@ -346,32 +395,1352 @@ func init() {
 }
 
 var fileDescriptor_3881f22d050822b3 = []byte{
-	// 424 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0xcf, 0xaa, 0xd3, 0x40,
-	0x14, 0xc6, 0x49, 0x85, 0xca, 0x3d, 0xa2, 0x5e, 0x47, 0xfc, 0x43, 0xee, 0x15, 0x24, 0x2b, 0x45,
-	0x92, 0xe0, 0x15, 0xbc, 0xba, 0x92, 0xca, 0x05, 0x45, 0xb8, 0x62, 0x43, 0xdd, 0x14, 0xa1, 0x4c,
-	0x3b, 0x43, 0x12, 0xdb, 0xce, 0x89, 0x39, 0x13, 0x68, 0x15, 0x41, 0xdc, 0xb9, 0xf6, 0xd1, 0x7c,
-	0x01, 0x17, 0xbe, 0x82, 0x7b, 0x69, 0x92, 0xe9, 0x1f, 0x13, 0x4b, 0x23, 0xdd, 0xcd, 0xcc, 0xc9,
-	0xf7, 0xcb, 0x77, 0xbe, 0x39, 0x09, 0xdc, 0x1f, 0x21, 0x4d, 0x91, 0x48, 0x8c, 0xc3, 0x34, 0x16,
-	0x0a, 0x85, 0xf4, 0x2b, 0x0b, 0x2f, 0x49, 0x51, 0x23, 0xb3, 0x2b, 0x8f, 0x7a, 0x66, 0x61, 0x1f,
-	0x87, 0x88, 0xe1, 0x44, 0xfa, 0x3c, 0x89, 0x7d, 0xae, 0x14, 0x6a, 0xae, 0x63, 0x54, 0x54, 0x28,
-	0x9d, 0x57, 0x70, 0xd4, 0xcd, 0x64, 0x3a, 0x3f, 0x93, 0x13, 0x19, 0x72, 0x2d, 0x45, 0x67, 0x8a,
-	0x99, 0xd2, 0x81, 0xfc, 0x90, 0x49, 0xd2, 0xec, 0x01, 0x5c, 0x13, 0x45, 0x05, 0xd3, 0x01, 0x17,
-	0x22, 0x95, 0x44, 0xb7, 0xad, 0xbb, 0xd6, 0xbd, 0x83, 0xe0, 0x70, 0x59, 0xe8, 0x14, 0xe7, 0xce,
-	0x63, 0x38, 0xae, 0x67, 0x51, 0x82, 0x8a, 0x24, 0xbb, 0x09, 0x6d, 0x9e, 0x9f, 0xe4, 0x84, 0x0b,
-	0x41, 0xb9, 0x73, 0xba, 0x00, 0xa5, 0x24, 0x46, 0xd5, 0xe8, 0x95, 0x6b, 0xc8, 0xd6, 0x06, 0xb2,
-	0x0f, 0xd7, 0xcf, 0x29, 0x7c, 0x51, 0x66, 0x60, 0x0c, 0xed, 0x87, 0xfd, 0x1a, 0x8e, 0x6a, 0xd8,
-	0xcb, 0x2e, 0x6f, 0xc1, 0x45, 0x3d, 0x1b, 0x44, 0x9c, 0xa2, 0x92, 0xdc, 0xd6, 0xb3, 0x97, 0x9c,
-	0xa2, 0x05, 0x8f, 0x34, 0xd7, 0x19, 0xe5, 0xbc, 0x83, 0xa0, 0xdc, 0x39, 0xef, 0xe0, 0xc6, 0x1a,
-	0xef, 0xad, 0x12, 0x7b, 0x75, 0xfb, 0x06, 0xee, 0xd4, 0xd2, 0xff, 0xdb, 0xef, 0xc9, 0xef, 0x16,
-	0x5c, 0x36, 0xbc, 0xfc, 0xbe, 0xd9, 0x4f, 0x0b, 0xae, 0xfe, 0x75, 0xe9, 0xec, 0xd4, 0xfb, 0xf7,
-	0x4c, 0x7a, 0x5b, 0x46, 0xce, 0x7e, 0xd2, 0x5c, 0x58, 0x74, 0xe2, 0xf4, 0xbf, 0xfe, 0xf8, 0xf5,
-	0xbd, 0xd5, 0x63, 0x81, 0x9f, 0xa9, 0x78, 0x21, 0x71, 0x93, 0x14, 0xdf, 0xcb, 0x91, 0xf6, 0x0b,
-	0xa2, 0x4b, 0x62, 0xec, 0x56, 0xbf, 0x25, 0x93, 0x88, 0x70, 0x8b, 0xc8, 0xfc, 0x4f, 0x95, 0xd4,
-	0x3f, 0xb3, 0x2f, 0x16, 0x1c, 0xae, 0xc2, 0xeb, 0xe1, 0x58, 0x2a, 0x62, 0x0f, 0xb7, 0x59, 0xad,
-	0x4d, 0xdd, 0x7e, 0xda, 0x58, 0x62, 0xda, 0x3b, 0xf9, 0x66, 0xc1, 0x25, 0x53, 0x3e, 0xa7, 0x90,
-	0x7d, 0x84, 0x2b, 0x67, 0x9b, 0x7e, 0xfc, 0x1d, 0xe1, 0x46, 0x66, 0x9f, 0x36, 0x14, 0x18, 0x2f,
-	0xcf, 0x3b, 0xfd, 0x67, 0x61, 0xac, 0xa3, 0x6c, 0xe8, 0x8d, 0x70, 0xba, 0x53, 0xdc, 0xb3, 0x55,
-	0xe0, 0x7a, 0x9e, 0x48, 0x1a, 0xb6, 0xf3, 0x1f, 0xd0, 0xa3, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff,
-	0x77, 0x2f, 0xa6, 0x0f, 0xe7, 0x04, 0x00, 0x00,
+	// 453 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0xcf, 0x6b, 0xd4, 0x40,
+	0x14, 0xc7, 0x77, 0x56, 0x58, 0xe9, 0x13, 0xb5, 0x8e, 0xf8, 0x83, 0xb4, 0x06, 0xc9, 0x49, 0x91,
+	0x4d, 0xb0, 0x82, 0xd5, 0x93, 0x54, 0x0a, 0x8a, 0x50, 0xb1, 0xa1, 0x1e, 0x5c, 0x84, 0x32, 0xdd,
+	0x19, 0xb2, 0x71, 0xbb, 0xf3, 0x62, 0xde, 0x04, 0xb6, 0x8a, 0x20, 0xde, 0xbc, 0x09, 0xfe, 0x53,
+	0x1e, 0x0b, 0x5e, 0x3c, 0x96, 0x5d, 0xff, 0x05, 0xef, 0xd2, 0x24, 0xd3, 0x1f, 0x26, 0x96, 0xa6,
+	0xec, 0x6d, 0x66, 0x5e, 0xbe, 0x9f, 0x7c, 0xdf, 0xf7, 0x4d, 0x02, 0x77, 0xfb, 0x48, 0x23, 0x24,
+	0x92, 0xc3, 0x28, 0x8d, 0xa5, 0x46, 0xa9, 0x82, 0xca, 0xc2, 0x4f, 0x52, 0x34, 0xc8, 0x9d, 0xca,
+	0xa3, 0xbe, 0x5d, 0x38, 0x8b, 0x11, 0x62, 0xb4, 0xad, 0x02, 0x91, 0xc4, 0x81, 0xd0, 0x1a, 0x8d,
+	0x30, 0x31, 0x6a, 0x2a, 0x94, 0xde, 0x0b, 0x58, 0x58, 0xcf, 0x54, 0xba, 0xb3, 0xaa, 0xb6, 0x55,
+	0x24, 0x8c, 0x92, 0x2b, 0x23, 0xcc, 0xb4, 0x09, 0xd5, 0xfb, 0x4c, 0x91, 0xe1, 0xf7, 0xe0, 0x8a,
+	0x2c, 0x2a, 0x98, 0x6e, 0x0a, 0x29, 0x53, 0x45, 0x74, 0x93, 0xdd, 0x66, 0x77, 0xe6, 0xc2, 0xf9,
+	0x83, 0xc2, 0x4a, 0x71, 0xee, 0x3d, 0x84, 0xc5, 0x7a, 0x16, 0x25, 0xa8, 0x49, 0xf1, 0xeb, 0xd0,
+	0x11, 0xf9, 0x49, 0x4e, 0x38, 0x17, 0x96, 0x3b, 0x6f, 0x1d, 0xa0, 0x94, 0xc4, 0xa8, 0x1b, 0xbd,
+	0xf2, 0x08, 0xb2, 0x7d, 0x0c, 0xd9, 0x83, 0xab, 0x6b, 0x14, 0x3d, 0x2b, 0x33, 0xb0, 0x86, 0x66,
+	0xc3, 0x7e, 0x09, 0x0b, 0x35, 0xec, 0x83, 0x2e, 0x6f, 0xc0, 0x79, 0x33, 0xde, 0x1c, 0x08, 0x1a,
+	0x94, 0xe4, 0x8e, 0x19, 0x3f, 0x17, 0x34, 0xd8, 0xe7, 0x91, 0x11, 0x26, 0xa3, 0x9c, 0x37, 0x17,
+	0x96, 0x3b, 0xef, 0x2d, 0x5c, 0x3b, 0xc2, 0x7b, 0xad, 0xe5, 0x4c, 0xdd, 0xbe, 0x82, 0x5b, 0xb5,
+	0xf4, 0x33, 0xfb, 0x5d, 0xfa, 0xd3, 0x86, 0x8b, 0x96, 0x97, 0xcf, 0x9b, 0xef, 0x31, 0xb8, 0xfc,
+	0xcf, 0xd0, 0xf9, 0xb2, 0xff, 0xff, 0x3b, 0xe9, 0x9f, 0x70, 0xe5, 0x9c, 0x47, 0xcd, 0x85, 0x45,
+	0x27, 0x5e, 0xef, 0xcb, 0xcf, 0xdf, 0xdf, 0xdb, 0x1b, 0x3c, 0x0c, 0x32, 0x1d, 0xef, 0x4b, 0xba,
+	0x49, 0x8a, 0xef, 0x54, 0xdf, 0x04, 0x05, 0xb1, 0x4b, 0x72, 0xd8, 0xad, 0x7e, 0x4b, 0x36, 0x11,
+	0xd9, 0x2d, 0x22, 0x0b, 0x3e, 0x56, 0x52, 0xff, 0xc4, 0x3f, 0x33, 0x98, 0x3f, 0x0c, 0x6f, 0x03,
+	0x87, 0x4a, 0x13, 0xbf, 0x7f, 0x92, 0xd5, 0xda, 0xd4, 0x9d, 0xc7, 0x8d, 0x25, 0xb6, 0xbd, 0xa5,
+	0xaf, 0x0c, 0x2e, 0xd8, 0xf2, 0x1a, 0x45, 0xfc, 0x03, 0x5c, 0x5a, 0x3d, 0xee, 0x27, 0x38, 0x25,
+	0xdc, 0xca, 0x9c, 0xe5, 0x86, 0x02, 0xeb, 0xe5, 0xe9, 0x9b, 0x1f, 0x13, 0x97, 0xed, 0x4e, 0x5c,
+	0xb6, 0x37, 0x71, 0xd9, 0xb7, 0xa9, 0xdb, 0xda, 0x9d, 0xba, 0xad, 0x5f, 0x53, 0xb7, 0xd5, 0x7b,
+	0x12, 0xc5, 0x66, 0x90, 0x6d, 0xf9, 0x7d, 0x1c, 0x9d, 0x6a, 0x0c, 0xe3, 0xc3, 0x41, 0x98, 0x9d,
+	0x44, 0xd1, 0x56, 0x27, 0xff, 0x31, 0x3d, 0xf8, 0x1b, 0x00, 0x00, 0xff, 0xff, 0xd2, 0xa6, 0xf0,
+	0x16, 0xff, 0x04, 0x00, 0x00,
 }
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// GridnodeQueryClient is the client API for GridnodeQuery service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type GridnodeQueryClient interface {
+	// DelegatedAmount queries the amount delegated by a specific account.
+	DelegatedAmount(ctx context.Context, in *QueryDelegatedAmountRequest, opts ...grpc.CallOption) (*QueryDelegatedAmountResponse, error)
+	UndelegateTokens(ctx context.Context, in *MsgGridnodeUndelegate, opts ...grpc.CallOption) (*MsgGridnodeUndelegateResponse, error)
+}
+
+type gridnodeQueryClient struct {
+	cc grpc1.ClientConn
+}
+
+func NewGridnodeQueryClient(cc grpc1.ClientConn) GridnodeQueryClient {
+	return &gridnodeQueryClient{cc}
+}
+
+func (c *gridnodeQueryClient) DelegatedAmount(ctx context.Context, in *QueryDelegatedAmountRequest, opts ...grpc.CallOption) (*QueryDelegatedAmountResponse, error) {
+	out := new(QueryDelegatedAmountResponse)
+	err := c.cc.Invoke(ctx, "/cosmossdkgridnode.gridnode.GridnodeQuery/DelegatedAmount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gridnodeQueryClient) UndelegateTokens(ctx context.Context, in *MsgGridnodeUndelegate, opts ...grpc.CallOption) (*MsgGridnodeUndelegateResponse, error) {
+	out := new(MsgGridnodeUndelegateResponse)
+	err := c.cc.Invoke(ctx, "/cosmossdkgridnode.gridnode.GridnodeQuery/UndelegateTokens", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// GridnodeQueryServer is the server API for GridnodeQuery service.
+type GridnodeQueryServer interface {
+	// DelegatedAmount queries the amount delegated by a specific account.
+	DelegatedAmount(context.Context, *QueryDelegatedAmountRequest) (*QueryDelegatedAmountResponse, error)
+	UndelegateTokens(context.Context, *MsgGridnodeUndelegate) (*MsgGridnodeUndelegateResponse, error)
+}
+
+// UnimplementedGridnodeQueryServer can be embedded to have forward compatible implementations.
+type UnimplementedGridnodeQueryServer struct {
+}
+
+func (*UnimplementedGridnodeQueryServer) DelegatedAmount(ctx context.Context, req *QueryDelegatedAmountRequest) (*QueryDelegatedAmountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelegatedAmount not implemented")
+}
+func (*UnimplementedGridnodeQueryServer) UndelegateTokens(ctx context.Context, req *MsgGridnodeUndelegate) (*MsgGridnodeUndelegateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UndelegateTokens not implemented")
+}
+
+func RegisterGridnodeQueryServer(s grpc1.Server, srv GridnodeQueryServer) {
+	s.RegisterService(&_GridnodeQuery_serviceDesc, srv)
+}
+
+func _GridnodeQuery_DelegatedAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDelegatedAmountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GridnodeQueryServer).DelegatedAmount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmossdkgridnode.gridnode.GridnodeQuery/DelegatedAmount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GridnodeQueryServer).DelegatedAmount(ctx, req.(*QueryDelegatedAmountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GridnodeQuery_UndelegateTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGridnodeUndelegate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GridnodeQueryServer).UndelegateTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmossdkgridnode.gridnode.GridnodeQuery/UndelegateTokens",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GridnodeQueryServer).UndelegateTokens(ctx, req.(*MsgGridnodeUndelegate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _GridnodeQuery_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "cosmossdkgridnode.gridnode.GridnodeQuery",
+	HandlerType: (*GridnodeQueryServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "DelegatedAmount",
+			Handler:    _GridnodeQuery_DelegatedAmount_Handler,
+		},
+		{
+			MethodName: "UndelegateTokens",
+			Handler:    _GridnodeQuery_UndelegateTokens_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "cosmossdkgridnode/gridnode/gridnode.proto",
+}
+
+// GridnodeMsgClient is the client API for GridnodeMsg service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type GridnodeMsgClient interface {
+	DelegateTokens(ctx context.Context, in *MsgGridnodeDelegate, opts ...grpc.CallOption) (*MsgGridnodeDelegateResponse, error)
+}
+
+type gridnodeMsgClient struct {
+	cc grpc1.ClientConn
+}
+
+func NewGridnodeMsgClient(cc grpc1.ClientConn) GridnodeMsgClient {
+	return &gridnodeMsgClient{cc}
+}
+
+func (c *gridnodeMsgClient) DelegateTokens(ctx context.Context, in *MsgGridnodeDelegate, opts ...grpc.CallOption) (*MsgGridnodeDelegateResponse, error) {
+	out := new(MsgGridnodeDelegateResponse)
+	err := c.cc.Invoke(ctx, "/cosmossdkgridnode.gridnode.GridnodeMsg/DelegateTokens", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// GridnodeMsgServer is the server API for GridnodeMsg service.
+type GridnodeMsgServer interface {
+	DelegateTokens(context.Context, *MsgGridnodeDelegate) (*MsgGridnodeDelegateResponse, error)
+}
+
+// UnimplementedGridnodeMsgServer can be embedded to have forward compatible implementations.
+type UnimplementedGridnodeMsgServer struct {
+}
+
+func (*UnimplementedGridnodeMsgServer) DelegateTokens(ctx context.Context, req *MsgGridnodeDelegate) (*MsgGridnodeDelegateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelegateTokens not implemented")
+}
+
+func RegisterGridnodeMsgServer(s grpc1.Server, srv GridnodeMsgServer) {
+	s.RegisterService(&_GridnodeMsg_serviceDesc, srv)
+}
+
+func _GridnodeMsg_DelegateTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGridnodeDelegate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GridnodeMsgServer).DelegateTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmossdkgridnode.gridnode.GridnodeMsg/DelegateTokens",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GridnodeMsgServer).DelegateTokens(ctx, req.(*MsgGridnodeDelegate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _GridnodeMsg_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "cosmossdkgridnode.gridnode.GridnodeMsg",
+	HandlerType: (*GridnodeMsgServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "DelegateTokens",
+			Handler:    _GridnodeMsg_DelegateTokens_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "cosmossdkgridnode/gridnode/gridnode.proto",
+}
+
+func (m *QueryDelegatedAmountRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDelegatedAmountRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDelegatedAmountRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.DelegatorAddress) > 0 {
+		i -= len(m.DelegatorAddress)
+		copy(dAtA[i:], m.DelegatorAddress)
+		i = encodeVarintGridnode(dAtA, i, uint64(len(m.DelegatorAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryDelegatedAmountResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDelegatedAmountResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDelegatedAmountResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Amount != 0 {
+		i = encodeVarintGridnode(dAtA, i, uint64(m.Amount))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Delegation) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Delegation) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Delegation) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Amount != 0 {
+		i = encodeVarintGridnode(dAtA, i, uint64(m.Amount))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.DelegatorAddress) > 0 {
+		i -= len(m.DelegatorAddress)
+		copy(dAtA[i:], m.DelegatorAddress)
+		i = encodeVarintGridnode(dAtA, i, uint64(len(m.DelegatorAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgGridnodeDelegate) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgGridnodeDelegate) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgGridnodeDelegate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Amount != 0 {
+		i = encodeVarintGridnode(dAtA, i, uint64(m.Amount))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.DelegatorAddress) > 0 {
+		i -= len(m.DelegatorAddress)
+		copy(dAtA[i:], m.DelegatorAddress)
+		i = encodeVarintGridnode(dAtA, i, uint64(len(m.DelegatorAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgGridnodeDelegateResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgGridnodeDelegateResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgGridnodeDelegateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Status) > 0 {
+		i -= len(m.Status)
+		copy(dAtA[i:], m.Status)
+		i = encodeVarintGridnode(dAtA, i, uint64(len(m.Status)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.TxHash) > 0 {
+		i -= len(m.TxHash)
+		copy(dAtA[i:], m.TxHash)
+		i = encodeVarintGridnode(dAtA, i, uint64(len(m.TxHash)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgGridnodeUndelegate) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgGridnodeUndelegate) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgGridnodeUndelegate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Amount != 0 {
+		i = encodeVarintGridnode(dAtA, i, uint64(m.Amount))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.DelegatorAddress) > 0 {
+		i -= len(m.DelegatorAddress)
+		copy(dAtA[i:], m.DelegatorAddress)
+		i = encodeVarintGridnode(dAtA, i, uint64(len(m.DelegatorAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgGridnodeUndelegateResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgGridnodeUndelegateResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgGridnodeUndelegateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Status) > 0 {
+		i -= len(m.Status)
+		copy(dAtA[i:], m.Status)
+		i = encodeVarintGridnode(dAtA, i, uint64(len(m.Status)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.TxHash) > 0 {
+		i -= len(m.TxHash)
+		copy(dAtA[i:], m.TxHash)
+		i = encodeVarintGridnode(dAtA, i, uint64(len(m.TxHash)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func encodeVarintGridnode(dAtA []byte, offset int, v uint64) int {
+	offset -= sovGridnode(v)
+	base := offset
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return base
+}
+func (m *QueryDelegatedAmountRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DelegatorAddress)
+	if l > 0 {
+		n += 1 + l + sovGridnode(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryDelegatedAmountResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Amount != 0 {
+		n += 1 + sovGridnode(uint64(m.Amount))
+	}
+	return n
+}
+
+func (m *Delegation) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DelegatorAddress)
+	if l > 0 {
+		n += 1 + l + sovGridnode(uint64(l))
+	}
+	if m.Amount != 0 {
+		n += 1 + sovGridnode(uint64(m.Amount))
+	}
+	return n
+}
+
+func (m *MsgGridnodeDelegate) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DelegatorAddress)
+	if l > 0 {
+		n += 1 + l + sovGridnode(uint64(l))
+	}
+	if m.Amount != 0 {
+		n += 1 + sovGridnode(uint64(m.Amount))
+	}
+	return n
+}
+
+func (m *MsgGridnodeDelegateResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.TxHash)
+	if l > 0 {
+		n += 1 + l + sovGridnode(uint64(l))
+	}
+	l = len(m.Status)
+	if l > 0 {
+		n += 1 + l + sovGridnode(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgGridnodeUndelegate) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DelegatorAddress)
+	if l > 0 {
+		n += 1 + l + sovGridnode(uint64(l))
+	}
+	if m.Amount != 0 {
+		n += 1 + sovGridnode(uint64(m.Amount))
+	}
+	return n
+}
+
+func (m *MsgGridnodeUndelegateResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.TxHash)
+	if l > 0 {
+		n += 1 + l + sovGridnode(uint64(l))
+	}
+	l = len(m.Status)
+	if l > 0 {
+		n += 1 + l + sovGridnode(uint64(l))
+	}
+	return n
+}
+
+func sovGridnode(x uint64) (n int) {
+	return (math_bits.Len64(x|1) + 6) / 7
+}
+func sozGridnode(x uint64) (n int) {
+	return sovGridnode(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *QueryDelegatedAmountRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGridnode
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDelegatedAmountRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDelegatedAmountRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DelegatorAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGridnode(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryDelegatedAmountResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGridnode
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDelegatedAmountResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDelegatedAmountResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			m.Amount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Amount |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGridnode(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Delegation) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGridnode
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Delegation: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Delegation: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DelegatorAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			m.Amount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Amount |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGridnode(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgGridnodeDelegate) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGridnode
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgGridnodeDelegate: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgGridnodeDelegate: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DelegatorAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			m.Amount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Amount |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGridnode(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgGridnodeDelegateResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGridnode
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgGridnodeDelegateResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgGridnodeDelegateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TxHash", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TxHash = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Status = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGridnode(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgGridnodeUndelegate) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGridnode
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgGridnodeUndelegate: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgGridnodeUndelegate: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DelegatorAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			m.Amount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Amount |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGridnode(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgGridnodeUndelegateResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGridnode
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgGridnodeUndelegateResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgGridnodeUndelegateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TxHash", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TxHash = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Status = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGridnode(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGridnode
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipGridnode(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	depth := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowGridnode
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+		case 1:
+			iNdEx += 8
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowGridnode
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if length < 0 {
+				return 0, ErrInvalidLengthGridnode
+			}
+			iNdEx += length
+		case 3:
+			depth++
+		case 4:
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupGridnode
+			}
+			depth--
+		case 5:
+			iNdEx += 4
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthGridnode
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
+	}
+	return 0, io.ErrUnexpectedEOF
+}
+
+var (
+	ErrInvalidLengthGridnode        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowGridnode          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupGridnode = fmt.Errorf("proto: unexpected end of group")
+)
