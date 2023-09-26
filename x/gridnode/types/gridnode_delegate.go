@@ -12,45 +12,6 @@ const (
 	TypeMsgDelegate = "delegategridnode"
 )
 
-// type MsgGridnodeDelegate struct {
-// 	DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
-// 	Amount           int64          `json:"amount" yaml:"amount"`
-// }
-
-// type MsgGridnodeUndelegate struct {
-// 	DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
-// 	Amount           int64          `json:"amount" yaml:"amount"`
-// }
-
-// ProtoMessage implements types.Msg.
-// func (MsgGridnodeDelegate) ProtoMessage() {
-// 	panic("unimplemented")
-// }
-
-// // Reset implements types.Msg.
-// func (MsgGridnodeDelegate) Reset() {
-// 	panic("unimplemented")
-// }
-
-// // String implements types.Msg.
-// func (MsgGridnodeDelegate) String() string {
-// 	panic("unimplemented")
-// }
-
-// func (MsgGridnodeUndelegate) ProtoMessage() {
-// 	panic("unimplemented")
-// }
-
-// // Reset implements types.Msg.
-// func (MsgGridnodeUndelegate) Reset() {
-// 	panic("unimplemented")
-// }
-
-// // String implements types.Msg.
-// func (MsgGridnodeUndelegate) String() string {
-// 	panic("unimplemented")
-// }
-
 func NewMsgDelegateGridnode(delegatorAddress string, amount int64) *MsgGridnodeDelegate {
 	fmt.Println("NewMsgDelegateGridnode: ", delegatorAddress, amount)
 	return &MsgGridnodeDelegate{
