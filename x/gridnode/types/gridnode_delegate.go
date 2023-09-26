@@ -42,13 +42,17 @@ func (msg *MsgGridnodeDelegate) Type() string {
 }
 
 func (msg MsgGridnodeDelegate) ValidateBasic() error {
-	fmt.Println("Delegator Address:", msg.DelegatorAddress)
+	fmt.Println("Validating MsgGridnodeDelegate:", msg)
+	fmt.Println("Amount:", msg.Amount)
 	if msg.DelegatorAddress == "" {
+		fmt.Println("Validation Failed: DelegatorAddress is empty")
 		return sdkerrors.ErrInvalidAddress
 	}
 	if msg.Amount <= 0 {
+		fmt.Println("Validation Failed: Amount is less than or equal to zero")
 		return sdkerrors.ErrInvalidCoins
 	}
+	fmt.Println("Validation Successful")
 	return nil
 }
 
