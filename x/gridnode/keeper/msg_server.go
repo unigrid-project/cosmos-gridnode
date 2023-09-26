@@ -19,6 +19,8 @@ func NewMsgServerImpl(keeper *Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
+var _ types.GridnodeMsgServer = &msgServer{}
+
 func (s *msgServer) DelegateTokens(ctx context.Context, req *types.MsgGridnodeDelegate) (*types.MsgGridnodeDelegateResponse, error) {
 	// Convert context.Context to sdk.Context
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
