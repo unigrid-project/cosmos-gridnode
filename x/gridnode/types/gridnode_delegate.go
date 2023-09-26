@@ -44,6 +44,7 @@ func (msg *MsgGridnodeDelegate) Type() string {
 func (msg MsgGridnodeDelegate) ValidateBasic() error {
 	fmt.Println("Validating MsgGridnodeDelegate:", msg)
 	fmt.Println("Amount:", msg.Amount)
+	fmt.Println("Delegator:", msg.DelegatorAddress)
 	if msg.DelegatorAddress == "" {
 		fmt.Println("Validation Failed: DelegatorAddress is empty")
 		return sdkerrors.ErrInvalidAddress
