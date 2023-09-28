@@ -75,15 +75,19 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amou
 	return nil
 }
 
-// Helper functions to get and set locked balance in the state
 func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
-	// ... retrieve the locked balance from the store
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(k.keyForDelegator(delegator))
+	if bz == nil {
+		return sdkmath.ZeroInt()
+	}
 	fmt.Println("GetLockedBalance: ", delegator)
-	return sdk.NewInt(0)
+	return sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(bz))
 }
 
 func (k Keeper) SetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
-	// ... set the locked balance in the store
+	store := ctx.KVStore(k.storeKey)
+	store.Set(k.keyForDelegator(delegator), amount.BigInt().Bytes())
 	fmt.Println("SetLockedBalance: ", delegator, amount)
 }
 
