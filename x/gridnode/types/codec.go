@@ -11,7 +11,6 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgGridnodeDelegate{}, "gridnode/Delegate", nil)
 	cdc.RegisterConcrete(&MsgGridnodeUndelegate{}, "gridnode/Undelegate", nil)
-	cdc.RegisterConcrete(&QueryDelegatedAmountRequest{}, "gridnode/Query", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -21,7 +20,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		(*sdk.Msg)(nil),
 		&MsgGridnodeDelegate{},
 		&MsgGridnodeUndelegate{},
-		&QueryDelegatedAmountRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
