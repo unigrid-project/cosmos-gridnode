@@ -1,7 +1,60 @@
 syntax = "proto3";
 package cosmossdkgridnode.gridnode;
 
+import "gogoproto/gogo.proto";
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/api/annotations.proto";
+
 option go_package = "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types";
 
-// Msg defines the Msg service.
-service Msg {}
+// Query defines the gRPC querier service for gridnode module.
+service GridnodeQuery {
+  // DelegatedAmount queries the amount delegated by a specific account.
+  rpc DelegatedAmount(QueryDelegatedAmountRequest) returns (QueryDelegatedAmountResponse) {
+    option (google.api.http).get = "/unigrid-project/cosmos-sdk-gridnode/gridnode/delegated-amount/{delegator_address}";
+  }
+}
+
+// Msg defines the Msg service for gridnode module.
+service Msg {
+  rpc DelegateTokens(MsgGridnodeDelegate) returns (MsgGridnodeDelegateResponse);
+  rpc UndelegateTokens(MsgGridnodeUndelegate) returns (MsgGridnodeUndelegateResponse);
+}
+
+// QueryDelegatedAmountRequest is the request type for the Query/DelegatedAmount RPC method.
+message QueryDelegatedAmountRequest {
+  string delegator_address = 1;
+}
+
+// QueryDelegatedAmountResponse is the response type for the Query/DelegatedAmount RPC method.
+message QueryDelegatedAmountResponse {
+  int64 amount = 1;
+}
+
+message Delegation {
+  string delegator_address = 1;
+  int64 amount = 2;
+}
+
+// MsgGridnodeDelegate is the request type for the Msg/DelegateTokens RPC method.
+message MsgGridnodeDelegate {
+  string delegator_address = 1;
+  int64 amount = 2;
+}
+
+// MsgGridnodeDelegateResponse is the response type for the Msg/DelegateTokens RPC method.
+message MsgGridnodeDelegateResponse {
+  string tx_hash = 1; // Transaction hash of the delegated tokens operation
+  string status = 2;  // Status of the operation, e.g., "success" or "failure"
+}
+
+message MsgGridnodeUndelegate {
+  string delegator_address = 1;
+  int64 amount = 2;
+}
+
+message MsgGridnodeUndelegateResponse {
+  string tx_hash = 1; // Transaction hash of the delegated tokens operation
+  string status = 2;  // Status of the operation, e.g., "success" or "failure"
+}

@@ -11,12 +11,12 @@ service GridnodeQuery {
   rpc DelegatedAmount(QueryDelegatedAmountRequest) returns (QueryDelegatedAmountResponse) {
     option (google.api.http).get = "/unigrid-project/cosmos-sdk-gridnode/gridnode/delegated-amount/{delegator_address}";
   }
-  rpc UndelegateTokens(MsgGridnodeUndelegate) returns (MsgGridnodeUndelegateResponse);
 }
 
 // Msg defines the Msg service for gridnode module.
 service GridnodeMsg {
   rpc DelegateTokens(MsgGridnodeDelegate) returns (MsgGridnodeDelegateResponse);
+  rpc UndelegateTokens(MsgGridnodeUndelegate) returns (MsgGridnodeUndelegateResponse);
 }
 
 // QueryDelegatedAmountRequest is the request type for the Query/DelegatedAmount RPC method.
