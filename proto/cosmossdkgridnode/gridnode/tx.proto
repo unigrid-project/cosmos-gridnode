@@ -23,6 +23,8 @@ message Delegation {
 message MsgGridnodeDelegate {
   string delegator_address = 1;
   int64 amount = 2;
+  int64 timestamp = 3; // Timestamp in Unix format or
+  string unique_id = 4; // unique identifier UUID
 }
 
 // MsgGridnodeDelegateResponse is the response type for the Msg/DelegateTokens RPC method.
@@ -34,6 +36,8 @@ message MsgGridnodeDelegateResponse {
 message MsgGridnodeUndelegate {
   string delegator_address = 1;
   int64 amount = 2;
+  int64 timestamp = 3; // Timestamp in Unix format or
+  string unique_id = 4; // unique identifier UUID
 }
 
 message MsgGridnodeUndelegateResponse {

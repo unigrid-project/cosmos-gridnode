@@ -2,9 +2,11 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/google/uuid"
 )
 
 const (
@@ -17,6 +19,8 @@ func NewMsgDelegateGridnode(delegatorAddress string, amount int64) *MsgGridnodeD
 	return &MsgGridnodeDelegate{
 		DelegatorAddress: delegatorAddress,
 		Amount:           amount,
+		Timestamp:        time.Now().Unix(),   // Current timestamp in Unix format or
+		UniqueId:         uuid.New().String(), // A new UUID
 	}
 }
 
