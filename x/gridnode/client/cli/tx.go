@@ -46,34 +46,32 @@ func GetTxCmd() *cobra.Command {
 
 func NewCmdDelegate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "delegate [delegator-address]",
+		Use:   "delegate [delegator-address] [amount]",
 		Short: "Delegate tokens for gridnode",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2), // Expecting 2 arguments now
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			fmt.Println("ARGS", args)
-			fmt.Println("ARGS 0", args[0])
-			amount, err := cmd.Flags().GetInt64("amount")
+			// Retrieve the delegator address and amount from args
+			delegatorAddress := args[0]
+			amountStr := args[1]
+
+			// Convert the amount string to int64
+			amount, err := strconv.ParseInt(amountStr, 10, 64)
 			if err != nil {
-				return err
+				return fmt.Errorf("invalid amount: %s", amountStr)
 			}
 
-			fmt.Println("Amount", amount)
-			fmt.Println("MSG", types.NewMsgDelegateGridnode)
 			// Create the message
-			msg := types.NewMsgDelegateGridnode(args[0], amount)
+			msg := types.NewMsgDelegateGridnode(delegatorAddress, amount)
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().Int64("amount", 0, "Amount of tokens to delegate")
-	cmd.MarkFlagRequired("amount")
-
 	return cmd
 }
 
