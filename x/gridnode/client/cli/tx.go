@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -10,12 +9,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	govutils "github.com/cosmos/cosmos-sdk/x/gov/client/utils"
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/spf13/cobra"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
-	"google.golang.org/grpc"
 )
 
 var (
@@ -40,7 +37,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		NewCmdDelegate(),
-		NewCmdQueryDelegatedAmount(),
+		//NewCmdQueryDelegatedAmount(),
 		NewCmdCastVoteFromGridnode(),
 	)
 
@@ -129,44 +126,44 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 	return cmd
 }
 
-func NewCmdQueryDelegatedAmount() *cobra.Command {
-	return &cobra.Command{
-		Use:   "delegated-amount [delegator-address]",
-		Short: "Query the amount delegated by the specified account",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-			delegatorAddr, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
+// func NewCmdQueryDelegatedAmount() *cobra.Command {
+// 	return &cobra.Command{
+// 		Use:   "delegated-amount [delegator-address]",
+// 		Short: "Query the amount delegated by the specified account",
+// 		Args:  cobra.ExactArgs(1),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			clientCtx, err := client.GetClientTxContext(cmd)
+// 			if err != nil {
+// 				return err
+// 			}
+// 			delegatorAddr, err := sdk.AccAddressFromBech32(args[0])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			// Set up the gRPC client
-			conn, err := grpc.Dial(clientCtx.NodeURI, grpc.WithInsecure())
-			if err != nil {
-				return err
-			}
-			defer conn.Close()
-			client := types.NewGridnodeQueryClient(conn)
+// 			// Set up the gRPC client
+// 			conn, err := grpc.Dial(clientCtx.NodeURI, grpc.WithInsecure())
+// 			if err != nil {
+// 				return err
+// 			}
+// 			defer conn.Close()
+// 			client := types.NewGridnodeQueryClient(conn)
 
-			// Make the gRPC request
-			req := &types.QueryDelegatedAmountRequest{
-				DelegatorAddress: delegatorAddr.String(),
-			}
-			res, err := client.DelegatedAmount(context.Background(), req)
-			if err != nil {
-				return err
-			}
-			// Handle the response
-			amount := res.Amount
-			response := &types.QueryDelegatedAmountResponse{
-				Amount: amount,
-			}
+// 			// Make the gRPC request
+// 			req := &types.QueryDelegatedAmountRequest{
+// 				DelegatorAddress: delegatorAddr.String(),
+// 			}
+// 			res, err := client.DelegatedAmount(context.Background(), req)
+// 			if err != nil {
+// 				return err
+// 			}
+// 			// Handle the response
+// 			amount := res.Amount
+// 			response := &types.QueryDelegatedAmountResponse{
+// 				Amount: amount,
+// 			}
 
-			return clientCtx.PrintProto(response)
-		},
-	}
-}
+// 			return clientCtx.PrintProto(response)
+// 		},
+// 	}
+// }

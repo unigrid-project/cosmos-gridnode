@@ -14,6 +14,10 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/unigrid-project/cosmos-sdk-gridnode/gridnode/params";
   }
+  // DelegatedAmount queries the amount delegated by a specific account.
+  rpc DelegatedAmount(QueryDelegatedAmountRequest) returns (QueryDelegatedAmountResponse) {
+    option (google.api.http).get = "/unigrid-project/cosmos-sdk-gridnode/gridnode/delegated-amount/{delegator_address}";
+  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -23,4 +27,14 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryDelegatedAmountRequest is the request type for the Query/DelegatedAmount RPC method.
+message QueryDelegatedAmountRequest {
+  string delegator_address = 1;
+}
+
+// QueryDelegatedAmountResponse is the response type for the Query/DelegatedAmount RPC method.
+message QueryDelegatedAmountResponse {
+  int64 amount = 1;
 }
