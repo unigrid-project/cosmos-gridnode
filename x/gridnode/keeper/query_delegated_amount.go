@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
@@ -16,8 +17,23 @@ func (k Keeper) DelegatedAmount(goCtx context.Context, req *types.QueryDelegated
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
+	// Define the key for the delegated amount, assuming it's based on the delegator's address
+	delegatorAddr, err := sdk.AccAddressFromBech32(req.DelegatorAddress)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid delegator address")
+	}
+	key := k.keyForDelegator(delegatorAddr) // Replace with your actual key generation logic
 
-	return &types.QueryDelegatedAmountResponse{}, nil
+	// Retrieve the value from the store
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(key)
+	if bz == nil {
+		// Return zero if no amount is found for the delegator
+		return &types.QueryDelegatedAmountResponse{Amount: 0}, nil
+	}
+
+	// Convert the byte value to the appropriate data type
+	amount := sdk.NewIntFromBigInt(new(big.Int).SetBytes(bz))
+
+	return &types.QueryDelegatedAmountResponse{Amount: amount.Int64()}, nil
 }
