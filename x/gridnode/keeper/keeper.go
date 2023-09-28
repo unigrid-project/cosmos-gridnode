@@ -61,8 +61,9 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 
 	// Store the locked tokens in the gridnode module's state
 	lockedBalance := k.GetLockedBalance(ctx, delegator)
+	fmt.Println("Current Locked balance before adding: ", lockedBalance) // Log the current locked balance before adding the new amount
 	lockedBalance = lockedBalance.Add(amount)
-	fmt.Println("Locked balance: ", lockedBalance)
+	fmt.Println("Locked balance after adding: ", lockedBalance) // Log the locked balance after adding the new amount
 	k.SetLockedBalance(ctx, delegator, lockedBalance)
 
 	return nil
@@ -77,18 +78,23 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amou
 
 func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(k.keyForDelegator(delegator))
+	key := k.keyForDelegator(delegator)
+	fmt.Println("Getting Locked Balance for delegator: ", delegator, " with key: ", string(key)) // Log the delegator and the key being used to get the balance
+	bz := store.Get(key)
 	if bz == nil {
+		fmt.Println("No Locked Balance found for delegator: ", delegator) // Log if no balance is found for the delegator
 		return sdkmath.ZeroInt()
 	}
-	fmt.Println("GetLockedBalance: ", delegator)
-	return sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(bz))
+	amount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(bz))
+	fmt.Println("Found Locked Balance: ", amount, " for delegator: ", delegator) // Log the amount found for the delegator
+	return amount
 }
 
 func (k Keeper) SetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(k.keyForDelegator(delegator), amount.BigInt().Bytes())
-	fmt.Println("SetLockedBalance: ", delegator, amount)
+	key := k.keyForDelegator(delegator)
+	fmt.Println("Setting Locked Balance: ", amount, " for delegator: ", delegator, " with key: ", string(key)) // Log the amount being set, the delegator, and the key being used
+	store.Set(key, amount.BigInt().Bytes())
 }
 
 const delegatedAmountPrefix = "delegatedAmount-"
