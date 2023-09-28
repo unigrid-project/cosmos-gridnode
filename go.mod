@@ -10,42 +10,20 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.2
 	github.com/cosmos/cosmos-sdk v0.47.4
 	github.com/cosmos/gogoproto v1.4.10
-	github.com/cosmos/ibc-go/v7 v7.3.0
 	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
 	google.golang.org/grpc v1.58.0
-	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v2 v2.4.0
-//github.com/cosmos/gogoproto v1.4.10
-//github.com/golang/protobuf v1.5.3
-//github.com/grpc-ecosystem/grpc-gateway v1.16.0
-//github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
-//github.com/spf13/cobra v1.6.1
-//github.com/stretchr/testify v1.8.4
-//google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
-//google.golang.org/grpc v1.58.0
-//google.golang.org/protobuf v1.31.0
-//gopkg.in/yaml.v2 v2.4.0
-// github.com/golang/protobuf v1.5.3
-//	 github.com/grpc-ecosystem/grpc-gateway v1.16.0
-//github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
-//github.com/spf13/cobra v1.7.0
-//github.com/stretchr/testify v1.8.4
-//google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
-//google.golang.org/grpc v1.58.0
-//google.golang.org/protobuf v1.31.0
-//gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
 	cosmossdk.io/api v0.3.1 // indirect
 	cosmossdk.io/core v0.5.1 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
-	cosmossdk.io/tools/rosetta v0.2.1 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
@@ -56,7 +34,6 @@ require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/cockroachdb/errors v1.10.0 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
 	github.com/cockroachdb/redact v1.1.5 // indirect
@@ -109,6 +86,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
+	github.com/linxGnu/grocksdb v1.7.16 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
@@ -134,7 +112,6 @@ require (
 	github.com/spf13/viper v1.16.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
-	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
 	github.com/zondax/hid v0.9.1 // indirect
@@ -146,10 +123,9 @@ require (
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/term v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
-	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230803162519-f966b187b2e5 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	pgregory.net/rapid v0.5.5 // indirect
