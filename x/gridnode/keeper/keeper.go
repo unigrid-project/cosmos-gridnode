@@ -62,6 +62,7 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 	// Store the locked tokens in the gridnode module's state
 	lockedBalance := k.GetLockedBalance(ctx, delegator)
 	lockedBalance = lockedBalance.Add(amount)
+	fmt.Println("Locked balance: ", lockedBalance)
 	k.SetLockedBalance(ctx, delegator, lockedBalance)
 
 	return nil

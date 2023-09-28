@@ -4,6 +4,9 @@ const (
 	// ModuleName defines the module name
 	ModuleName = "gridnode"
 
+	// ModuleAccountName defines the module account name
+	ModuleAccountName = "module_account_gridnode"
+
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
 
