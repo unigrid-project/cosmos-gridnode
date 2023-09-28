@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
@@ -21,6 +22,7 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 var _ types.MsgServer = &msgServer{}
 
 func (s *msgServer) DelegateTokens(ctx context.Context, req *types.MsgGridnodeDelegate) (*types.MsgGridnodeDelegateResponse, error) {
+	fmt.Println("msgServer DelegateTokens called with:", req)
 	// Convert context.Context to sdk.Context
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
