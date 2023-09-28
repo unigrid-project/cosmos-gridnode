@@ -58,14 +58,17 @@ func NewCmdDelegate() *cobra.Command {
 				return err
 			}
 
+			fmt.Println("ARGS", args)
+			fmt.Println("ARGS 0", args[0])
 			amount, err := cmd.Flags().GetInt64("amount")
 			if err != nil {
 				return err
 			}
 
+			fmt.Println("Amount", amount)
+			fmt.Println("MSG", types.NewMsgDelegateGridnode)
 			// Create the message
 			msg := types.NewMsgDelegateGridnode(args[0], amount)
-
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
