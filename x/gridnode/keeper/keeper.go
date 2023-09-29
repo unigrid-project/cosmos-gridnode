@@ -71,7 +71,7 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 	// Deduct tokens from user's balance
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, delegator, types.ModuleName, sdk.NewCoins(sdk.NewCoin("ugd", amount)))
 	if err != nil {
-		return err
+		return errors.Wrapf(types.ErrInsufficientFunds, "failed to delegate tokens: %v", err)
 	}
 
 	// Store the locked tokens in the gridnode module's state
