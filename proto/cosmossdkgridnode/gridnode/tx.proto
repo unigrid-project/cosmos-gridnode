@@ -10,8 +10,18 @@ option go_package = "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/t
 
 // Msg defines the Msg service for gridnode module.
 service Msg {
-  rpc DelegateTokens(MsgGridnodeDelegate) returns (MsgGridnodeDelegateResponse);
-  rpc UndelegateTokens(MsgGridnodeUndelegate) returns (MsgGridnodeUndelegateResponse);
+  rpc DelegateTokens(MsgGridnodeDelegate) returns (MsgGridnodeDelegateResponse) {
+    option (google.api.http) = {
+      post: "/gridnode/delegate-tokens"
+      body: "*"
+    };
+  }
+  rpc UndelegateTokens(MsgGridnodeUndelegate) returns (MsgGridnodeUndelegateResponse) {
+    option (google.api.http) = {
+      post: "/gridnode/undelegate-tokens"
+      body: "*"
+    };
+  }
 }
 
 message Delegation {
