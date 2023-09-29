@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -52,8 +53,22 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // DelegateTokens locks the tokens for gridnode delegation
 func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) error {
+	// Retrieve the available balance of the delegator account
+	availableBalance := k.bankKeeper.GetBalance(ctx, delegator, "ugd")
+	fmt.Println("availableBalance: ", availableBalance)
+	// Retrieve the amount already delegated by the delegator
+	delegatedAmount := k.GetDelegatedAmount(ctx, delegator)
+	fmt.Println("delegatedAmount: ", delegatedAmount)
+	// Calculate the maximum amount the delegator can delegate
+	maxDelegatable := availableBalance.Amount.Sub(delegatedAmount)
+	fmt.Println("maxDelegatable: ", maxDelegatable)
+
+	// Check if the delegator has enough balance to delegate the specified amount
+	if amount.GT(maxDelegatable) {
+		return errors.Wrapf(types.ErrInsufficientFunds, "account %s has insufficient funds to delegate %s", delegator, amount.String())
+	}
+
 	// Deduct tokens from user's balance
-	fmt.Println("DelegateTokens: ", delegator, amount)
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, delegator, types.ModuleName, sdk.NewCoins(sdk.NewCoin("ugd", amount)))
 	if err != nil {
 		return err
@@ -65,6 +80,13 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 	lockedBalance = lockedBalance.Add(amount)
 	fmt.Println("Locked balance after adding: ", lockedBalance) // Log the locked balance after adding the new amount
 	k.SetLockedBalance(ctx, delegator, lockedBalance)
+
+	// Emitting events
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeDelegate,
+		sdk.NewAttribute(types.AttributeKeyDelegator, delegator.String()),
+		sdk.NewAttribute(types.AttributeKeyAmount, amount.String()),
+	))
 
 	return nil
 }
