@@ -33,10 +33,20 @@ func handleMsgDelegate(ctx sdk.Context, am AppModule, msg *types.MsgGridnodeDele
 		return nil, err
 	}
 
-	coins := am.bankKeeper.SpendableCoins(ctx, delegatorAddr)
-	// Check if the delegator has enough coins to delegate
-	if coins.AmountOf("ugd").LT(sdk.NewInt(msg.Amount)) {
-		return nil, errors.Wrapf(types.ErrInsufficientFunds, "not enough coins to delegate")
+	// Retrieve the available balance of the delegator account
+	availableBalance := am.bankKeeper.GetBalance(ctx, delegatorAddr, "ugd")
+	fmt.Println("availableBalance: ", availableBalance)
+	// Retrieve the amount already delegated by the delegator
+	delegatedAmount := am.keeper.GetDelegatedAmount(ctx, delegatorAddr)
+	fmt.Println("delegatedAmount: ", delegatedAmount)
+	// Calculate the maximum amount the delegator can delegate
+	maxDelegatable := availableBalance.Amount.Sub(delegatedAmount)
+	fmt.Println("maxDelegatable: ", maxDelegatable)
+
+	msgAmount := sdk.NewInt(msg.Amount) // Convert int64 to sdk.Int
+	// Check if the delegator has enough balance to delegate the specified amount
+	if msgAmount.GT(maxDelegatable) {
+		return nil, errors.Wrapf(types.ErrInsufficientFunds, "account %s has insufficient funds to delegate %s", delegatorAddr, strconv.FormatInt(msg.Amount, 10))
 	}
 
 	fmt.Println("handleMsgDelegate: ", msg)
