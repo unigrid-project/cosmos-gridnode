@@ -37,7 +37,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		NewCmdDelegate(),
-		//NewCmdQueryDelegatedAmount(),
+		NewCmdUndelegate(),
 		NewCmdCastVoteFromGridnode(),
 	)
 
@@ -124,44 +124,32 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 	return cmd
 }
 
-// func NewCmdQueryDelegatedAmount() *cobra.Command {
-// 	return &cobra.Command{
-// 		Use:   "delegated-amount [delegator-address]",
-// 		Short: "Query the amount delegated by the specified account",
-// 		Args:  cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			clientCtx, err := client.GetClientTxContext(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
-// 			delegatorAddr, err := sdk.AccAddressFromBech32(args[0])
-// 			if err != nil {
-// 				return err
-// 			}
+func NewCmdUndelegate() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "undelegate [validator-addr] [amount]",
+		Short: "Undelegate shares from a validator",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			// Set up the gRPC client
-// 			conn, err := grpc.Dial(clientCtx.NodeURI, grpc.WithInsecure())
-// 			if err != nil {
-// 				return err
-// 			}
-// 			defer conn.Close()
-// 			client := types.NewGridnodeQueryClient(conn)
+			amountStr := args[1]
 
-// 			// Make the gRPC request
-// 			req := &types.QueryDelegatedAmountRequest{
-// 				DelegatorAddress: delegatorAddr.String(),
-// 			}
-// 			res, err := client.DelegatedAmount(context.Background(), req)
-// 			if err != nil {
-// 				return err
-// 			}
-// 			// Handle the response
-// 			amount := res.Amount
-// 			response := &types.QueryDelegatedAmountResponse{
-// 				Amount: amount,
-// 			}
+			// Convert the amount string to int64
+			amount, err := strconv.ParseInt(amountStr, 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid amount: %s", amountStr)
+			}
 
-// 			return clientCtx.PrintProto(response)
-// 		},
-// 	}
-// }
+			msg := types.NewMsgUndelegateGridnode(args[0], amount)
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}

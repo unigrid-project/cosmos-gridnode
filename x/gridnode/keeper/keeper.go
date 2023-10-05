@@ -93,8 +93,35 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 
 // UndelegateTokens unlocks the tokens from gridnode delegation
 func (k Keeper) UndelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) error {
-	// ... similar logic to release the tokens
-	fmt.Println("UndelegateTokens: ", delegator, amount)
+	// Retrieve the amount delegated by the delegator
+	delegatedAmount := k.GetDelegatedAmount(ctx, delegator)
+	fmt.Println("delegatedAmount: ", delegatedAmount)
+
+	// Check if amount exceeds delegated amount
+	if amount.GT(delegatedAmount) {
+		return errors.Wrapf(types.ErrAmountExceedsDelagation, "account %s is trying to undelegate amount greater than delegated amount %s", delegator, amount.String())
+	}
+
+	// Deduct tokens from module's balance
+	err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, delegator, sdk.NewCoins(sdk.NewCoin("ugd", amount)))
+	if err != nil {
+		return errors.Wrapf(types.ErrAmountExceedsDelagation, "failed to undelegate tokens: %v", err)
+	}
+
+	// Store the locked tokens in the gridnode module's state
+	lockedBalance := k.GetLockedBalance(ctx, delegator)
+	fmt.Println("Current Locked balance before subtracting: ", lockedBalance) // Log the current locked balance before subtracting the new amount
+	lockedBalance = lockedBalance.Sub(amount)
+	fmt.Println("Locked balance after subtracting: ", lockedBalance) // Log the locked balance after subtracting the new amount
+	k.SetLockedBalance(ctx, delegator, lockedBalance)
+
+	// Emitting events
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeUndelegate,
+		sdk.NewAttribute(types.AttributeKeyDelegator, delegator.String()),
+		sdk.NewAttribute(types.AttributeKeyAmount, amount.String()),
+	))
+
 	return nil
 }
 

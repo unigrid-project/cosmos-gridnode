@@ -12,9 +12,11 @@ type Gridnode struct {
 
 const (
 	EventTypeDelegate     = "delegate"
+	EventTypeUndelegate   = "undelegate"
 	AttributeKeyDelegator = "delegator"
 	AttributeKeyAmount    = "amount"
 )
 
 var ErrInsufficientFunds = errors.Register(ModuleName, 1100, "insufficient funds")
+var ErrAmountExceedsDelagation = errors.Register(ModuleName, 1101, "amount exceeds delegated amount")
 var ErrUnknownRequest = errors.Register(ModuleName, 101, "unknown request")

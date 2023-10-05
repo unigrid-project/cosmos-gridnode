@@ -24,10 +24,13 @@ func NewMsgDelegateGridnode(delegatorAddress string, amount int64) *MsgGridnodeD
 	}
 }
 
-func NewMsgUndelegateGridnode(delegatorAddress sdk.AccAddress, amount int64) *MsgGridnodeUndelegate {
+func NewMsgUndelegateGridnode(delegatorAddress string, amount int64) *MsgGridnodeUndelegate {
+	fmt.Println("NewMsgUndelegateGridnode: ", delegatorAddress, amount)
 	return &MsgGridnodeUndelegate{
-		DelegatorAddress: delegatorAddress.String(), // Convert to string
+		DelegatorAddress: delegatorAddress,
 		Amount:           amount,
+		Timestamp:        time.Now().Unix(),   // Current timestamp in Unix format or
+		UniqueId:         uuid.New().String(), // A new UUID
 	}
 }
 
