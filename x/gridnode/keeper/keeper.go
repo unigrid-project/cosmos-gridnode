@@ -97,6 +97,30 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount sdkmath.Int) error {
 	// ... similar logic to release the tokens
 	fmt.Println("UndelegateTokens: ", account, amount)
+	// Retrieve the current unbonding entries for the account
+	store := ctx.KVStore(k.storeKey)
+	key := k.keyForUnBonding(account)
+	var currentUnbondingEntries []types.UnbondingEntry
+	if bz := store.Get(key); bz != nil {
+		if err := json.Unmarshal(bz, &currentUnbondingEntries); err != nil {
+			return err
+		}
+	}
+
+	// Calculate the total unbonding amount including the new amount
+	totalUnbonding := amount
+	for _, entry := range currentUnbondingEntries {
+		totalUnbonding = totalUnbonding.Add(sdkmath.NewInt(entry.Amount))
+	}
+
+	// Retrieve the delegated amount for the account
+	delegatedAmount := k.GetDelegatedAmount(ctx, account)
+
+	// Check if the total unbonding amount exceeds the delegated amount
+	if totalUnbonding.GT(delegatedAmount) {
+		return errors.Wrapf(types.ErrOverUnbond, "attempting to unbond more than the delegated amount")
+	}
+
 	// Retrieve current block time
 	blockTime := ctx.BlockTime()
 

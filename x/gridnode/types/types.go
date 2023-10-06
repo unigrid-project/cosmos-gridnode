@@ -29,3 +29,4 @@ const (
 var ErrInsufficientFunds = errors.Register(ModuleName, 1100, "insufficient funds")
 var ErrAmountExceedsDelagation = errors.Register(ModuleName, 1101, "amount exceeds delegated amount")
 var ErrUnknownRequest = errors.Register(ModuleName, 101, "unknown request")
+var ErrOverUnbond = errors.Register(ModuleName, 1102, "attempting to unbond more than the delegated amount")
