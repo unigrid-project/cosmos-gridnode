@@ -4,11 +4,8 @@ import (
 	"fmt"
 	// "strings"
 
-	"github.com/spf13/cobra"
-
 	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/cobra"
 
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 )
@@ -26,6 +23,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdDelegatedAmount())
+	cmd.AddCommand(CmdUnbondingEntries())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

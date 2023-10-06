@@ -35,23 +35,15 @@ func NewMsgUndelegateGridnode(delegatorAddress string, amount int64) *MsgGridnod
 }
 
 // Implementing the sdk.Msg interface
-
 func (msg *MsgGridnodeDelegate) Route() string {
-	fmt.Println("Route:", RouterKey)
-	fmt.Println("msg:", msg)
 	return RouterKey
 }
 
 func (msg *MsgGridnodeDelegate) Type() string {
-	fmt.Println("TypeMsgDelegate:", TypeMsgDelegate)
-	fmt.Println("msg:", msg)
 	return TypeMsgDelegate
 }
 
 func (msg MsgGridnodeDelegate) ValidateBasic() error {
-	fmt.Println("Validating MsgGridnodeDelegate:", msg)
-	fmt.Println("Amount:", msg.Amount)
-	fmt.Println("Delegator:", msg.DelegatorAddress)
 	if msg.DelegatorAddress == "" {
 		fmt.Println("Validation Failed: DelegatorAddress is empty")
 		return sdkerrors.ErrInvalidAddress

@@ -75,6 +75,37 @@ func NewCmdDelegate() *cobra.Command {
 	return cmd
 }
 
+func NewCmdUnDelegate() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "undelegate [delegator-address] [amount]",
+		Short: "Undelegate tokens from the gridnode module",
+		Args:  cobra.ExactArgs(2), // Expecting 2 arguments now
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// Retrieve the delegator address and amount from args
+			delegatorAddress := args[0]
+			amountStr := args[1]
+
+			// Convert the amount string to int64
+			amount, err := strconv.ParseInt(amountStr, 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid amount: %s", amountStr)
+			}
+
+			// Create the message
+			msg := types.NewMsgUndelegateGridnode(delegatorAddress, amount)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
 func NewCmdCastVoteFromGridnode() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cast-vote [proposal-id] [option]",

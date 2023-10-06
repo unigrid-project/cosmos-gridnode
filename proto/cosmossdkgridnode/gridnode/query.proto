@@ -8,15 +8,24 @@ import "google/api/annotations.proto";
 
 option go_package = "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types";
 
+message UnbondingEntry {
+  string account = 1; // This remains a string as it represents an address
+  int64 amount = 2; // Use the Coin type from Cosmos SDK
+  int64 completion_time = 3; // Use the Timestamp type for time values
+}
+
 // Query defines the gRPC querier service.
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/unigrid-project/cosmos-sdk-gridnode/gridnode/params";
+    option (google.api.http).get = "/gridnode/params";
   }
   // DelegatedAmount queries the amount delegated by a specific account.
   rpc DelegatedAmount(QueryDelegatedAmountRequest) returns (QueryDelegatedAmountResponse) {
-    option (google.api.http).get = "/unigrid-project/cosmos-sdk-gridnode/gridnode/delegated-amount/{delegator_address}";
+    option (google.api.http).get = "/gridnode/delegated-amount/{delegator_address}";
+  }
+  rpc UnbondingEntries(QueryUnbondingEntriesRequest) returns (QueryUnbondingEntriesResponse) {
+    option (google.api.http).get = "/gridnode/query-unbonding/{bonding_account_address}";
   }
 }
 
@@ -37,4 +46,16 @@ message QueryDelegatedAmountRequest {
 // QueryDelegatedAmountResponse is the response type for the Query/DelegatedAmount RPC method.
 message QueryDelegatedAmountResponse {
   int64 amount = 1;
+}
+
+// QueryUnbondingEntriesRequest is the request type for the Query/UnbondingEntries RPC method.
+message QueryUnbondingEntriesRequest {
+  string bonding_account_address = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryUnbondingEntriesResponse is the response type for the Query/UnbondingEntries RPC method.
+message QueryUnbondingEntriesResponse {
+  repeated UnbondingEntry unbonding_entries = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

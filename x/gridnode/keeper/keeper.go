@@ -1,8 +1,10 @@
 package keeper
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
+	"time"
 
 	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
@@ -92,37 +94,50 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 }
 
 // UndelegateTokens unlocks the tokens from gridnode delegation
-func (k Keeper) UndelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) error {
-	// Retrieve the amount delegated by the delegator
-	delegatedAmount := k.GetDelegatedAmount(ctx, delegator)
-	fmt.Println("delegatedAmount: ", delegatedAmount)
+func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount sdkmath.Int) error {
+	// ... similar logic to release the tokens
+	fmt.Println("UndelegateTokens: ", account, amount)
+	// Retrieve current block time
+	blockTime := ctx.BlockTime()
 
-	// Check if amount exceeds delegated amount
-	if amount.GT(delegatedAmount) {
-		return errors.Wrapf(types.ErrAmountExceedsDelagation, "account %s is trying to undelegate amount greater than delegated amount %s", delegator, amount.String())
+	// Define the unbonding period, 21 days
+	//unbondingPeriod := time.Hour * 24 * 21
+	// Define the unbonding period, 1 minute (for testing)
+	unbondingPeriod := time.Minute
+	// Calculate the completion time for the unbonding
+	completionTime := blockTime.Add(unbondingPeriod)
+
+	// Create an UnbondingEntry
+	entry := types.UnbondingEntry{
+		Account:        account.String(),
+		Amount:         amount.Int64(),
+		CompletionTime: completionTime.Unix(),
 	}
 
-	// Deduct tokens from module's balance
-	err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, delegator, sdk.NewCoins(sdk.NewCoin("ugd", amount)))
-	if err != nil {
-		return errors.Wrapf(types.ErrAmountExceedsDelagation, "failed to undelegate tokens: %v", err)
+	// Store the unbonding entry in the state using the AddUnbonding method
+	if err := k.AddUnbondingEntry(ctx, entry); err != nil {
+		return err
 	}
 
-	// Store the locked tokens in the gridnode module's state
-	lockedBalance := k.GetLockedBalance(ctx, delegator)
-	fmt.Println("Current Locked balance before subtracting: ", lockedBalance) // Log the current locked balance before subtracting the new amount
-	lockedBalance = lockedBalance.Sub(amount)
-	fmt.Println("Locked balance after subtracting: ", lockedBalance) // Log the locked balance after subtracting the new amount
-	k.SetLockedBalance(ctx, delegator, lockedBalance)
-
-	// Emitting events
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUndelegate,
-		sdk.NewAttribute(types.AttributeKeyDelegator, delegator.String()),
-		sdk.NewAttribute(types.AttributeKeyAmount, amount.String()),
-	))
+	// Emit an event or log the unbonding
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeUnbond,
+			sdk.NewAttribute(types.AttributeKeyDelegator, account.String()),
+			sdk.NewAttribute(types.AttributeKeyAmount, amount.String()),
+			sdk.NewAttribute(types.AttributeKeyCompletionTime, completionTime.String()),
+		),
+	)
 
 	return nil
+}
+
+func (k Keeper) GetStoreKey() storetypes.StoreKey {
+	return k.storeKey
+}
+
+func (k Keeper) GetBankKeeper() types.BankKeeper {
+	return k.bankKeeper
 }
 
 func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
@@ -152,6 +167,16 @@ func (k Keeper) keyForDelegator(delegator sdk.AccAddress) []byte {
 	return []byte(delegatedAmountPrefix + delegator.String())
 }
 
+const bondingPrefix = "bonding-"
+
+func (k Keeper) GetBondingPrefix() string {
+	return bondingPrefix
+}
+
+func (k Keeper) keyForUnBonding(delegator sdk.AccAddress, height int64) []byte {
+	return []byte(fmt.Sprintf("%s%s-%d", bondingPrefix, delegator.String(), height))
+}
+
 func (k Keeper) GetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
 	store := ctx.KVStore(k.storeKey)
 	byteValue := store.Get(k.keyForDelegator(delegator))
@@ -172,4 +197,32 @@ func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, am
 	}
 	store.Set(k.keyForDelegator(delegator), amount.BigInt().Bytes())
 	fmt.Println("Set delegated amount for address", delegator, "to:", amount)
+}
+
+// Assuming UnbondingEntry implements the ProtoMarshaler interface
+
+func (k Keeper) AddUnbondingEntry(ctx sdk.Context, entry types.UnbondingEntry) error {
+	store := ctx.KVStore(k.storeKey)
+	delegatorAddr, err := sdk.AccAddressFromBech32(entry.Account)
+	key := k.keyForUnBonding(delegatorAddr, ctx.BlockHeight())
+
+	var entries []types.UnbondingEntry
+	if bz := store.Get(key); bz != nil {
+		// Deserialize the existing entries using JSON
+		if err := json.Unmarshal(bz, &entries); err != nil {
+			return err
+		}
+	}
+
+	// Add the new entry to the list
+	entries = append(entries, entry)
+
+	// Serialize the updated list of entries using JSON
+	bz, err := json.Marshal(entries)
+	if err != nil {
+		return err
+	}
+	store.Set(key, bz)
+
+	return nil
 }

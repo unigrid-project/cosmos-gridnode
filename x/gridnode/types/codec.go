@@ -11,6 +11,7 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgGridnodeDelegate{}, "gridnode/Delegate", nil)
 	cdc.RegisterConcrete(&MsgGridnodeUndelegate{}, "gridnode/Undelegate", nil)
+	cdc.RegisterConcrete(&UnbondingEntry{}, "gridnode/UnbondingEntry", nil)
 	// this line is used by starport scaffolding # 2
 }
 
