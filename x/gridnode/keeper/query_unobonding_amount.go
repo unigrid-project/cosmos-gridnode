@@ -24,7 +24,7 @@ func (k Keeper) UnbondingEntries(goCtx context.Context, req *types.QueryUnbondin
 	}
 
 	// Define the key for the unbonding entries based on the delegator's address and block height
-	key := k.keyForUnBonding(delegatorAddr, ctx.BlockHeight())
+	key := k.keyForUnBonding(delegatorAddr)
 
 	// Retrieve the value from the store
 	store := ctx.KVStore(k.storeKey)

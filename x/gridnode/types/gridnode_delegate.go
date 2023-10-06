@@ -11,7 +11,8 @@ import (
 
 const (
 	// Define constants for your module's message types and routes
-	TypeMsgDelegate = "delegategridnode"
+	TypeMsgDelegate   = "delegategridnode"
+	TypeMsgUndelegate = "undelegategridnode"
 )
 
 func NewMsgDelegateGridnode(delegatorAddress string, amount int64) *MsgGridnodeDelegate {
@@ -73,7 +74,7 @@ func (msg *MsgGridnodeUndelegate) Route() string {
 }
 
 func (msg *MsgGridnodeUndelegate) Type() string {
-	return "undelegate"
+	return TypeMsgUndelegate
 }
 
 func (msg MsgGridnodeUndelegate) ValidateBasic() error {

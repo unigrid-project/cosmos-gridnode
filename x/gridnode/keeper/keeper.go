@@ -173,8 +173,8 @@ func (k Keeper) GetBondingPrefix() string {
 	return bondingPrefix
 }
 
-func (k Keeper) keyForUnBonding(delegator sdk.AccAddress, height int64) []byte {
-	return []byte(fmt.Sprintf("%s%s-%d", bondingPrefix, delegator.String(), height))
+func (k Keeper) keyForUnBonding(delegator sdk.AccAddress) []byte {
+	return []byte(fmt.Sprintf("%s%s", bondingPrefix, delegator.String()))
 }
 
 func (k Keeper) GetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
@@ -199,16 +199,18 @@ func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, am
 	fmt.Println("Set delegated amount for address", delegator, "to:", amount)
 }
 
-// Assuming UnbondingEntry implements the ProtoMarshaler interface
-
+// AddUnbondingEntry adds a new unbonding entry for a given account.
 func (k Keeper) AddUnbondingEntry(ctx sdk.Context, entry types.UnbondingEntry) error {
 	store := ctx.KVStore(k.storeKey)
 	delegatorAddr, err := sdk.AccAddressFromBech32(entry.Account)
-	key := k.keyForUnBonding(delegatorAddr, ctx.BlockHeight())
+	if err != nil {
+		return err
+	}
+	key := k.keyForUnBonding(delegatorAddr)
 
 	var entries []types.UnbondingEntry
 	if bz := store.Get(key); bz != nil {
-		// Deserialize the existing entries using JSON
+		// Deserialize the existing entries
 		if err := json.Unmarshal(bz, &entries); err != nil {
 			return err
 		}
@@ -217,7 +219,7 @@ func (k Keeper) AddUnbondingEntry(ctx sdk.Context, entry types.UnbondingEntry) e
 	// Add the new entry to the list
 	entries = append(entries, entry)
 
-	// Serialize the updated list of entries using JSON
+	// Serialize the updated list of entries
 	bz, err := json.Marshal(entries)
 	if err != nil {
 		return err
