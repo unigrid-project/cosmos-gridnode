@@ -52,6 +52,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 					fmt.Println("Error sending coins from module to account:", err)
 					continue
 				}
+				// Reduce the delegated amount from the store
+				currentDelegatedAmount := k.GetDelegatedAmount(ctx, delegatorAddr)
+				newDelegatedAmount := currentDelegatedAmount.Sub(amount)
+				k.SetDelegatedAmount(ctx, delegatorAddr, newDelegatedAmount)
 
 				// Placeholder to call hedgehog
 				fmt.Printf("Placeholder: Notify hedgehog that account %s is unbonding %s tokens.\n", entry.Account, entry.Amount)
