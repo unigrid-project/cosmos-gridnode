@@ -18,6 +18,9 @@ func NewHandler(am AppModule) sdk.Handler {
 			return handleMsgDelegate(ctx, am, msg)
 		case *types.MsgGridnodeUndelegate:
 			return handleMsgUndelegate(ctx, am.keeper, msg)
+		case *types.MsgRegisterKeys:
+			fmt.Printf("MsgRegisterKeys received in NewHandler: %+v\n", msg)
+			return handleRegisterKeys(ctx, am.keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, errors.Wrapf(types.ErrUnknownRequest, errMsg)
@@ -68,5 +71,11 @@ func handleMsgDelegate(ctx sdk.Context, am AppModule, msg *types.MsgGridnodeDele
 func handleMsgUndelegate(ctx sdk.Context, k keeper.Keeper, msg *types.MsgGridnodeUndelegate) (*sdk.Result, error) {
 	// Your logic for handling the MsgGridnodeUndelegate message goes here
 	fmt.Println("handleMsgUndelegate: ", msg)
+	return &sdk.Result{}, nil
+}
+
+func handleRegisterKeys(ctx sdk.Context, k keeper.Keeper, msg *types.MsgRegisterKeys) (*sdk.Result, error) {
+	// Your logic for handling the MsgRegisterKeys message goes here
+	fmt.Println("handleMsgRegisterKeys: ", msg)
 	return &sdk.Result{}, nil
 }

@@ -4,7 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -38,6 +41,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(
 		NewCmdDelegate(),
 		NewCmdUnDelegate(),
+		CmdRegisterKeys(),
 		NewCmdCastVoteFromGridnode(),
 	)
 
@@ -151,6 +155,37 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 
 	cmd.Flags().String(FlagMetadata, "", "Specify metadata of the vote")
 	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdRegisterKeys() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "register-keys [account-address] [keys]",
+		Short: "Register keys for a specific account",
+		Args:  cobra.ExactArgs(2), // Expecting 2 arguments now
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// Convert the account address string to a types.AccAddress
+			accountAddress, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			// Split the keys string into a slice of strings
+			keys := strings.Split(args[1], listSeparator) // Assuming keys are comma-separated
+
+			// Create the message
+			msg := types.NewMsgRegisterKeys(accountAddress, keys)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd) // Add common transaction flags
 
 	return cmd
 }

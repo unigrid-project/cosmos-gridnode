@@ -10,6 +10,21 @@ type Gridnode struct {
 	Owner sdk.AccAddress // This is the owner of the gridnode
 }
 
+type KeyInfo struct {
+	Keys      []string `json:"keys"`
+	Timestamp int64    `json:"timestamp"`
+	UniqueId  string   `json:"unique_id"`
+	Status    string   `json:"status"`
+}
+
+type AccountKeys struct {
+	Account   string   `json:"account_address"`
+	Keys      []string `json:"keys"`
+	Timestamp int64    `json:"timestamp"`
+	UniqueId  string   `json:"unique_id"`
+	Status    string   `json:"status"`
+}
+
 // type UnbondingEntry struct {
 // 	Delegator      sdk.AccAddress `json:"delegator" yaml:"delegator"`
 // 	Amount         math.Int       `json:"amount" yaml:"amount"`

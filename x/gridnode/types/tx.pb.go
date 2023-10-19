@@ -154,8 +154,7 @@ func (m *MsgGridnodeDelegate) GetUniqueId() string {
 
 // MsgGridnodeDelegateResponse is the response type for the Msg/DelegateTokens RPC method.
 type MsgGridnodeDelegateResponse struct {
-	TxHash string `protobuf:"bytes,1,opt,name=tx_hash,json=txHash,proto3" json:"tx_hash,omitempty"`
-	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	Status string `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *MsgGridnodeDelegateResponse) Reset()         { *m = MsgGridnodeDelegateResponse{} }
@@ -190,13 +189,6 @@ func (m *MsgGridnodeDelegateResponse) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_MsgGridnodeDelegateResponse proto.InternalMessageInfo
-
-func (m *MsgGridnodeDelegateResponse) GetTxHash() string {
-	if m != nil {
-		return m.TxHash
-	}
-	return ""
-}
 
 func (m *MsgGridnodeDelegateResponse) GetStatus() string {
 	if m != nil {
@@ -274,8 +266,7 @@ func (m *MsgGridnodeUndelegate) GetUniqueId() string {
 }
 
 type MsgGridnodeUndelegateResponse struct {
-	TxHash string `protobuf:"bytes,1,opt,name=tx_hash,json=txHash,proto3" json:"tx_hash,omitempty"`
-	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	Status string `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *MsgGridnodeUndelegateResponse) Reset()         { *m = MsgGridnodeUndelegateResponse{} }
@@ -311,14 +302,119 @@ func (m *MsgGridnodeUndelegateResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgGridnodeUndelegateResponse proto.InternalMessageInfo
 
-func (m *MsgGridnodeUndelegateResponse) GetTxHash() string {
+func (m *MsgGridnodeUndelegateResponse) GetStatus() string {
 	if m != nil {
-		return m.TxHash
+		return m.Status
 	}
 	return ""
 }
 
-func (m *MsgGridnodeUndelegateResponse) GetStatus() string {
+type MsgRegisterKeys struct {
+	Account   []byte   `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Keys      []string `protobuf:"bytes,2,rep,name=keys,proto3" json:"keys,omitempty"`
+	Timestamp int64    `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	UniqueId  string   `protobuf:"bytes,4,opt,name=unique_id,json=uniqueId,proto3" json:"unique_id,omitempty"`
+}
+
+func (m *MsgRegisterKeys) Reset()         { *m = MsgRegisterKeys{} }
+func (m *MsgRegisterKeys) String() string { return proto.CompactTextString(m) }
+func (*MsgRegisterKeys) ProtoMessage()    {}
+func (*MsgRegisterKeys) Descriptor() ([]byte, []int) {
+	return fileDescriptor_56efdebecfaef4e7, []int{5}
+}
+func (m *MsgRegisterKeys) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRegisterKeys) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRegisterKeys.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRegisterKeys) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRegisterKeys.Merge(m, src)
+}
+func (m *MsgRegisterKeys) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRegisterKeys) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRegisterKeys.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRegisterKeys proto.InternalMessageInfo
+
+func (m *MsgRegisterKeys) GetAccount() []byte {
+	if m != nil {
+		return m.Account
+	}
+	return nil
+}
+
+func (m *MsgRegisterKeys) GetKeys() []string {
+	if m != nil {
+		return m.Keys
+	}
+	return nil
+}
+
+func (m *MsgRegisterKeys) GetTimestamp() int64 {
+	if m != nil {
+		return m.Timestamp
+	}
+	return 0
+}
+
+func (m *MsgRegisterKeys) GetUniqueId() string {
+	if m != nil {
+		return m.UniqueId
+	}
+	return ""
+}
+
+type MsgRegisterKeysResponse struct {
+	Status string `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+}
+
+func (m *MsgRegisterKeysResponse) Reset()         { *m = MsgRegisterKeysResponse{} }
+func (m *MsgRegisterKeysResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRegisterKeysResponse) ProtoMessage()    {}
+func (*MsgRegisterKeysResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_56efdebecfaef4e7, []int{6}
+}
+func (m *MsgRegisterKeysResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRegisterKeysResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRegisterKeysResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRegisterKeysResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRegisterKeysResponse.Merge(m, src)
+}
+func (m *MsgRegisterKeysResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRegisterKeysResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRegisterKeysResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRegisterKeysResponse proto.InternalMessageInfo
+
+func (m *MsgRegisterKeysResponse) GetStatus() string {
 	if m != nil {
 		return m.Status
 	}
@@ -331,6 +427,8 @@ func init() {
 	proto.RegisterType((*MsgGridnodeDelegateResponse)(nil), "cosmossdkgridnode.gridnode.MsgGridnodeDelegateResponse")
 	proto.RegisterType((*MsgGridnodeUndelegate)(nil), "cosmossdkgridnode.gridnode.MsgGridnodeUndelegate")
 	proto.RegisterType((*MsgGridnodeUndelegateResponse)(nil), "cosmossdkgridnode.gridnode.MsgGridnodeUndelegateResponse")
+	proto.RegisterType((*MsgRegisterKeys)(nil), "cosmossdkgridnode.gridnode.MsgRegisterKeys")
+	proto.RegisterType((*MsgRegisterKeysResponse)(nil), "cosmossdkgridnode.gridnode.MsgRegisterKeysResponse")
 }
 
 func init() {
@@ -338,37 +436,41 @@ func init() {
 }
 
 var fileDescriptor_56efdebecfaef4e7 = []byte{
-	// 467 bytes of a gzipped FileDescriptorProto
+	// 535 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x94, 0x4d, 0x8b, 0xd3, 0x40,
-	0x18, 0xc7, 0x3b, 0xad, 0x54, 0x3b, 0x07, 0xd9, 0x1d, 0xdf, 0xba, 0xe9, 0x1a, 0x4a, 0x14, 0x59,
-	0x94, 0x26, 0xa8, 0x07, 0xd1, 0x8b, 0x28, 0x82, 0x7a, 0x58, 0xd1, 0xa2, 0x07, 0xbd, 0x94, 0xd9,
-	0xce, 0x30, 0x1d, 0xbb, 0x99, 0x27, 0xe6, 0x99, 0x40, 0xbd, 0xfa, 0x09, 0x04, 0x11, 0xaf, 0x1e,
-	0xfd, 0x28, 0x1e, 0x17, 0xf6, 0xe2, 0x51, 0x5a, 0x3f, 0x88, 0x74, 0x32, 0x6d, 0x16, 0xb6, 0x82,
-	0x15, 0x0f, 0x7b, 0x09, 0xf3, 0xbc, 0xfd, 0xf3, 0xfb, 0x0f, 0x79, 0x42, 0xaf, 0x0c, 0x01, 0x53,
-	0x40, 0x14, 0x63, 0x95, 0x6b, 0x61, 0x40, 0xc8, 0x64, 0x79, 0xb0, 0x93, 0x38, 0xcb, 0xc1, 0x02,
-	0x0b, 0x8e, 0x35, 0xc5, 0x8b, 0x43, 0x70, 0x5e, 0x81, 0x02, 0xd7, 0x96, 0xcc, 0x4f, 0xe5, 0x44,
-	0xb0, 0xc9, 0x53, 0x6d, 0x20, 0x71, 0x4f, 0x9f, 0xda, 0x2a, 0x45, 0x06, 0x65, 0x6f, 0x19, 0xf8,
-	0xd2, 0xb6, 0x02, 0x50, 0xfb, 0x32, 0xe1, 0x99, 0x4e, 0xb8, 0x31, 0x60, 0xb9, 0xd5, 0x60, 0x7c,
-	0x35, 0x7a, 0x41, 0xe9, 0x23, 0xb9, 0x2f, 0x95, 0x4b, 0xb2, 0x1b, 0x74, 0x53, 0x94, 0x11, 0xe4,
-	0x03, 0x2e, 0x44, 0x2e, 0x11, 0xdb, 0xa4, 0x4b, 0x76, 0x5a, 0xfd, 0x8d, 0x65, 0xe1, 0x41, 0x99,
-	0x67, 0x17, 0x69, 0x93, 0xa7, 0x50, 0x18, 0xdb, 0xae, 0x77, 0xc9, 0x4e, 0xa3, 0xef, 0xa3, 0xe8,
-	0x33, 0xa1, 0xe7, 0x76, 0x51, 0x3d, 0xf6, 0x26, 0xbc, 0xbc, 0xfc, 0x2f, 0xe2, 0x6c, 0x9b, 0xb6,
-	0xac, 0x4e, 0x25, 0x5a, 0x9e, 0x66, 0xed, 0x86, 0x2b, 0x55, 0x09, 0xd6, 0xa1, 0xad, 0xc2, 0xe8,
-	0x77, 0x85, 0x1c, 0x68, 0xd1, 0x3e, 0xe5, 0xa4, 0xcf, 0x94, 0x89, 0xa7, 0x22, 0x7a, 0x46, 0x3b,
-	0x2b, 0xb0, 0xfa, 0x12, 0x33, 0x30, 0x28, 0xd9, 0x25, 0x7a, 0xda, 0x4e, 0x06, 0x23, 0x8e, 0x23,
-	0x0f, 0xd5, 0xb4, 0x93, 0x27, 0x1c, 0x47, 0x73, 0x14, 0xb4, 0xdc, 0x16, 0xe8, 0x50, 0x5a, 0x7d,
-	0x1f, 0x45, 0x5f, 0x08, 0xbd, 0x70, 0x44, 0xf0, 0x95, 0x11, 0x27, 0xc5, 0xe9, 0x73, 0x7a, 0x79,
-	0x25, 0xd8, 0x3f, 0x7b, 0xbd, 0x75, 0x58, 0xa7, 0x8d, 0x5d, 0x54, 0xec, 0x2b, 0xa1, 0x67, 0x17,
-	0x37, 0xf7, 0x12, 0xc6, 0xd2, 0x20, 0x4b, 0xe2, 0x3f, 0x7f, 0xc0, 0xf1, 0x8a, 0x0b, 0x0f, 0xee,
-	0xac, 0x39, 0xb0, 0xa0, 0x8e, 0xae, 0x7e, 0x38, 0xfc, 0xf5, 0xa9, 0x1e, 0x46, 0x5b, 0xd5, 0x16,
-	0x2d, 0x9c, 0xf5, 0xac, 0x83, 0xb9, 0x47, 0xae, 0xb3, 0x6f, 0x84, 0x6e, 0x54, 0x96, 0x3d, 0xe4,
-	0xcd, 0xbf, 0x7c, 0x67, 0x35, 0x18, 0xdc, 0x5d, 0x7b, 0x64, 0x09, 0x7a, 0xcd, 0x81, 0x76, 0xa3,
-	0x4e, 0x05, 0x5a, 0x98, 0xe3, 0xa8, 0x0f, 0x5f, 0x7f, 0x9f, 0x86, 0xe4, 0x60, 0x1a, 0x92, 0x9f,
-	0xd3, 0x90, 0x7c, 0x9c, 0x85, 0xb5, 0x83, 0x59, 0x58, 0xfb, 0x31, 0x0b, 0x6b, 0x6f, 0xee, 0x2b,
-	0x6d, 0x47, 0xc5, 0x5e, 0x3c, 0x84, 0x34, 0x29, 0x8c, 0x9e, 0xcb, 0xf4, 0xb2, 0x1c, 0xde, 0xca,
-	0xa1, 0xf5, 0xdb, 0xdd, 0x43, 0x31, 0xee, 0x2d, 0xe5, 0x27, 0x47, 0x7e, 0x2c, 0xef, 0x33, 0x89,
-	0x7b, 0x4d, 0xb7, 0xde, 0xb7, 0x7f, 0x07, 0x00, 0x00, 0xff, 0xff, 0xf3, 0xc8, 0x6f, 0xaf, 0x83,
-	0x04, 0x00, 0x00,
+	0x18, 0xc7, 0x3b, 0xed, 0xb2, 0xda, 0x61, 0xd1, 0xdd, 0xf1, 0x65, 0xb3, 0x69, 0x0d, 0x25, 0x8a,
+	0x94, 0x5d, 0xda, 0xb0, 0x2e, 0xb2, 0xb8, 0x17, 0x51, 0x04, 0x11, 0xe9, 0xc1, 0xa0, 0x07, 0xbd,
+	0x94, 0x6c, 0x66, 0x18, 0xc7, 0x6e, 0x66, 0x62, 0x66, 0x02, 0x5b, 0x8f, 0x7e, 0x02, 0x41, 0xc5,
+	0xab, 0x47, 0x3f, 0x8a, 0xc7, 0x05, 0x2f, 0x1e, 0xa5, 0xf5, 0xe4, 0xa7, 0x90, 0x4c, 0x26, 0x49,
+	0xd5, 0x4a, 0x2d, 0x7a, 0xf0, 0x12, 0x9e, 0x97, 0xff, 0xf3, 0x3c, 0xbf, 0xc9, 0xbc, 0xc0, 0xcb,
+	0xa1, 0x90, 0x91, 0x90, 0x12, 0x8f, 0x68, 0xc2, 0x30, 0x17, 0x98, 0x78, 0xa5, 0xa1, 0x8e, 0xfb,
+	0x71, 0x22, 0x94, 0x40, 0xf6, 0x2f, 0xa2, 0x7e, 0x61, 0xd8, 0xe7, 0xa9, 0xa0, 0x42, 0xcb, 0xbc,
+	0xcc, 0xca, 0x2b, 0xec, 0x8d, 0x20, 0x62, 0x5c, 0x78, 0xfa, 0x6b, 0x42, 0x5b, 0x79, 0x93, 0x61,
+	0xae, 0xcd, 0x1d, 0x93, 0x6a, 0x53, 0x21, 0xe8, 0x11, 0xf1, 0x82, 0x98, 0x79, 0x01, 0xe7, 0x42,
+	0x05, 0x8a, 0x09, 0x6e, 0xb2, 0xee, 0x03, 0x08, 0xef, 0x90, 0x23, 0x42, 0x75, 0x10, 0xed, 0xc0,
+	0x0d, 0x9c, 0x7b, 0x22, 0x19, 0x06, 0x18, 0x27, 0x44, 0x4a, 0x0b, 0x74, 0x40, 0xb7, 0xe9, 0xaf,
+	0x97, 0x89, 0x5b, 0x79, 0x1c, 0x5d, 0x84, 0xab, 0x41, 0x24, 0x52, 0xae, 0xac, 0x7a, 0x07, 0x74,
+	0x1b, 0xbe, 0xf1, 0xdc, 0xb7, 0x00, 0x9e, 0x1b, 0x48, 0x7a, 0xd7, 0x2c, 0xc2, 0xb4, 0x27, 0xff,
+	0xa4, 0x39, 0x6a, 0xc3, 0xa6, 0x62, 0x11, 0x91, 0x2a, 0x88, 0x62, 0xab, 0xa1, 0x53, 0x55, 0x00,
+	0xb5, 0x60, 0x33, 0xe5, 0xec, 0x79, 0x4a, 0x86, 0x0c, 0x5b, 0x2b, 0xba, 0xf5, 0xe9, 0x3c, 0x70,
+	0x0f, 0xbb, 0xd7, 0x61, 0x6b, 0x0e, 0x96, 0x4f, 0x64, 0x2c, 0xb8, 0x24, 0xd9, 0x44, 0xa9, 0x02,
+	0x95, 0x16, 0x4c, 0xc6, 0x73, 0xdf, 0x01, 0x78, 0x61, 0xa6, 0xee, 0x11, 0xc7, 0xff, 0xcb, 0x82,
+	0xf6, 0xe1, 0xa5, 0xb9, 0x60, 0x0b, 0x97, 0xf4, 0x02, 0x9e, 0x1d, 0x48, 0xea, 0x13, 0xca, 0xa4,
+	0x22, 0xc9, 0x7d, 0x32, 0x96, 0xc8, 0x82, 0xa7, 0x82, 0x30, 0xd4, 0x7c, 0x99, 0x76, 0xcd, 0x2f,
+	0x5c, 0x84, 0xe0, 0xca, 0x88, 0x8c, 0xa5, 0x55, 0xef, 0x34, 0xba, 0x4d, 0x5f, 0xdb, 0x7f, 0x03,
+	0xbd, 0x0b, 0x37, 0x7f, 0x9a, 0xbd, 0x08, 0xf7, 0xda, 0xb7, 0x06, 0x6c, 0x0c, 0x24, 0x45, 0xef,
+	0x01, 0x3c, 0x53, 0x6c, 0xdb, 0x43, 0x31, 0x22, 0x5c, 0x22, 0xaf, 0xff, 0xfb, 0xdb, 0xd3, 0x9f,
+	0xb3, 0xdb, 0xf6, 0xfe, 0x92, 0x05, 0x05, 0x9c, 0x7b, 0xe5, 0xe5, 0xa7, 0xaf, 0xaf, 0xeb, 0x8e,
+	0xbb, 0x55, 0x5d, 0xe1, 0xe2, 0x7f, 0xf7, 0x94, 0x86, 0x39, 0x00, 0xdb, 0xe8, 0x03, 0x80, 0xeb,
+	0xd5, 0x46, 0x18, 0xc8, 0xdd, 0x3f, 0x9c, 0x59, 0x15, 0xda, 0x37, 0x96, 0x2e, 0x29, 0x41, 0xaf,
+	0x6a, 0xd0, 0x8e, 0xdb, 0xaa, 0x40, 0x53, 0x3e, 0x07, 0xf5, 0x0d, 0x80, 0x6b, 0x3f, 0x1c, 0x81,
+	0x9d, 0x05, 0x33, 0x67, 0xc5, 0xf6, 0xde, 0x12, 0xe2, 0x12, 0xcd, 0xd5, 0x68, 0x6d, 0x77, 0xb3,
+	0x42, 0x4b, 0x8c, 0xae, 0x97, 0x9d, 0xab, 0x03, 0xb0, 0x7d, 0xfb, 0xf1, 0xc7, 0x89, 0x03, 0x4e,
+	0x26, 0x0e, 0xf8, 0x32, 0x71, 0xc0, 0xab, 0xa9, 0x53, 0x3b, 0x99, 0x3a, 0xb5, 0xcf, 0x53, 0xa7,
+	0xf6, 0xe4, 0x26, 0x65, 0xea, 0x69, 0x7a, 0xd8, 0x0f, 0x45, 0xe4, 0xa5, 0x9c, 0x65, 0x2d, 0x7a,
+	0x71, 0x22, 0x9e, 0x91, 0x50, 0x99, 0x17, 0xaf, 0x27, 0xf1, 0xa8, 0x57, 0xb6, 0x3e, 0x9e, 0x79,
+	0x6c, 0xc7, 0x31, 0x91, 0x87, 0xab, 0xfa, 0xc9, 0xdb, 0xfb, 0x1e, 0x00, 0x00, 0xff, 0xff, 0xe8,
+	0xc2, 0x3c, 0xba, 0x97, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -385,6 +487,7 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	DelegateTokens(ctx context.Context, in *MsgGridnodeDelegate, opts ...grpc.CallOption) (*MsgGridnodeDelegateResponse, error)
 	UndelegateTokens(ctx context.Context, in *MsgGridnodeUndelegate, opts ...grpc.CallOption) (*MsgGridnodeUndelegateResponse, error)
+	RegisterKeys(ctx context.Context, in *MsgRegisterKeys, opts ...grpc.CallOption) (*MsgRegisterKeysResponse, error)
 }
 
 type msgClient struct {
@@ -413,10 +516,20 @@ func (c *msgClient) UndelegateTokens(ctx context.Context, in *MsgGridnodeUndeleg
 	return out, nil
 }
 
+func (c *msgClient) RegisterKeys(ctx context.Context, in *MsgRegisterKeys, opts ...grpc.CallOption) (*MsgRegisterKeysResponse, error) {
+	out := new(MsgRegisterKeysResponse)
+	err := c.cc.Invoke(ctx, "/cosmossdkgridnode.gridnode.Msg/RegisterKeys", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	DelegateTokens(context.Context, *MsgGridnodeDelegate) (*MsgGridnodeDelegateResponse, error)
 	UndelegateTokens(context.Context, *MsgGridnodeUndelegate) (*MsgGridnodeUndelegateResponse, error)
+	RegisterKeys(context.Context, *MsgRegisterKeys) (*MsgRegisterKeysResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -428,6 +541,9 @@ func (*UnimplementedMsgServer) DelegateTokens(ctx context.Context, req *MsgGridn
 }
 func (*UnimplementedMsgServer) UndelegateTokens(ctx context.Context, req *MsgGridnodeUndelegate) (*MsgGridnodeUndelegateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndelegateTokens not implemented")
+}
+func (*UnimplementedMsgServer) RegisterKeys(ctx context.Context, req *MsgRegisterKeys) (*MsgRegisterKeysResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterKeys not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -470,6 +586,24 @@ func _Msg_UndelegateTokens_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_RegisterKeys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRegisterKeys)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RegisterKeys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmossdkgridnode.gridnode.Msg/RegisterKeys",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RegisterKeys(ctx, req.(*MsgRegisterKeys))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "cosmossdkgridnode.gridnode.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -481,6 +615,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UndelegateTokens",
 			Handler:    _Msg_UndelegateTokens_Handler,
+		},
+		{
+			MethodName: "RegisterKeys",
+			Handler:    _Msg_RegisterKeys_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -594,13 +732,6 @@ func (m *MsgGridnodeDelegateResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 		copy(dAtA[i:], m.Status)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.Status)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.TxHash) > 0 {
-		i -= len(m.TxHash)
-		copy(dAtA[i:], m.TxHash)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.TxHash)))
-		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
@@ -678,12 +809,86 @@ func (m *MsgGridnodeUndelegateResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 		copy(dAtA[i:], m.Status)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.Status)))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0xa
 	}
-	if len(m.TxHash) > 0 {
-		i -= len(m.TxHash)
-		copy(dAtA[i:], m.TxHash)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.TxHash)))
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRegisterKeys) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRegisterKeys) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRegisterKeys) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.UniqueId) > 0 {
+		i -= len(m.UniqueId)
+		copy(dAtA[i:], m.UniqueId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.UniqueId)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.Timestamp != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Timestamp))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Keys) > 0 {
+		for iNdEx := len(m.Keys) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Keys[iNdEx])
+			copy(dAtA[i:], m.Keys[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.Keys[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Account) > 0 {
+		i -= len(m.Account)
+		copy(dAtA[i:], m.Account)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Account)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRegisterKeysResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRegisterKeysResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRegisterKeysResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Status) > 0 {
+		i -= len(m.Status)
+		copy(dAtA[i:], m.Status)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Status)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -746,10 +951,6 @@ func (m *MsgGridnodeDelegateResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.TxHash)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
 	l = len(m.Status)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
@@ -786,10 +987,45 @@ func (m *MsgGridnodeUndelegateResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.TxHash)
+	l = len(m.Status)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	return n
+}
+
+func (m *MsgRegisterKeys) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Account)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.Keys) > 0 {
+		for _, s := range m.Keys {
+			l = len(s)
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	if m.Timestamp != 0 {
+		n += 1 + sovTx(uint64(m.Timestamp))
+	}
+	l = len(m.UniqueId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgRegisterKeysResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	l = len(m.Status)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
@@ -1087,38 +1323,6 @@ func (m *MsgGridnodeDelegateResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TxHash", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.TxHash = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
 			var stringLen uint64
@@ -1353,7 +1557,7 @@ func (m *MsgGridnodeUndelegateResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TxHash", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1381,9 +1585,226 @@ func (m *MsgGridnodeUndelegateResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TxHash = string(dAtA[iNdEx:postIndex])
+			m.Status = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRegisterKeys) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRegisterKeys: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRegisterKeys: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Account = append(m.Account[:0], dAtA[iNdEx:postIndex]...)
+			if m.Account == nil {
+				m.Account = []byte{}
+			}
 			iNdEx = postIndex
 		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Keys", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Keys = append(m.Keys, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+			}
+			m.Timestamp = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Timestamp |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UniqueId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UniqueId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRegisterKeysResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRegisterKeysResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRegisterKeysResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}

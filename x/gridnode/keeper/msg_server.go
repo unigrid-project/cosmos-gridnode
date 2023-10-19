@@ -41,7 +41,7 @@ func (s *msgServer) DelegateTokens(ctx context.Context, req *types.MsgGridnodeDe
 
 	// Construct and return a response
 	return &types.MsgGridnodeDelegateResponse{
-		// Populate with any needed response data
+		Status: "success",
 	}, nil
 }
 
@@ -64,6 +64,25 @@ func (s *msgServer) UndelegateTokens(ctx context.Context, req *types.MsgGridnode
 
 	// Construct and return a response
 	return &types.MsgGridnodeUndelegateResponse{
-		// Populate with any needed response data
+		Status: "success",
+	}, nil
+}
+
+func (s *msgServer) RegisterKeys(ctx context.Context, req *types.MsgRegisterKeys) (*types.MsgRegisterKeysResponse, error) {
+	// Convert context.Context to sdk.Context
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	// Convert []byte to sdk.AccAddress
+	account := sdk.AccAddress(req.Account)
+
+	// Call the Keeper's RegisterKeys method to perform the business logic
+	err := s.Keeper.RegisterKeys(sdkCtx, account, req.Keys, req.Timestamp, req.UniqueId)
+	if err != nil {
+		return nil, err
+	}
+
+	// Construct and return a response
+	return &types.MsgRegisterKeysResponse{
+		Status: "success",
 	}, nil
 }

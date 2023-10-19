@@ -27,6 +27,12 @@ service Query {
   rpc UnbondingEntries(QueryUnbondingEntriesRequest) returns (QueryUnbondingEntriesResponse) {
     option (google.api.http).get = "/gridnode/query-unbonding/{bonding_account_address}";
   }
+  rpc AccountKeys(QueryAccountKeysRequest) returns (QueryAccountKeysResponse) {
+    option (google.api.http).get = "/gridnode/account-keys/{account_address}";
+  }
+  rpc AllKeys(QueryAllKeysRequest) returns (QueryAllKeysResponse) {
+    option (google.api.http).get = "/gridnode/get-all-keys";
+  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -59,3 +65,27 @@ message QueryUnbondingEntriesResponse {
   repeated UnbondingEntry unbonding_entries = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
+
+message QueryAccountKeysRequest {
+  string account_address = 1;
+}
+
+message QueryAccountKeysResponse {
+  repeated string keys = 1;
+}
+
+message QueryAllKeysRequest {}
+
+message QueryAllKeysResponse {
+  repeated AccountKeysEntry account_keys_entries = 1;
+}
+
+message AccountKeysEntry {
+  string account_address = 1;
+  repeated string keys = 2;
+  int64 timestamp = 3;
+  string unique_id = 4;
+  string status = 5;
+}
+
+

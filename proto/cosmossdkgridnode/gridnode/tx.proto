@@ -22,6 +22,12 @@ service Msg {
       body: "*"
     };
   }
+  rpc RegisterKeys(MsgRegisterKeys) returns (MsgRegisterKeysResponse) {
+    option (google.api.http) = {
+      post: "/gridnode/register-keys"
+      body: "*"
+    };
+  }
 }
 
 message Delegation {
@@ -39,8 +45,7 @@ message MsgGridnodeDelegate {
 
 // MsgGridnodeDelegateResponse is the response type for the Msg/DelegateTokens RPC method.
 message MsgGridnodeDelegateResponse {
-  string tx_hash = 1; // Transaction hash of the delegated tokens operation
-  string status = 2;  // Status of the operation, e.g., "success" or "failure"
+  string status = 1;
 }
 
 message MsgGridnodeUndelegate {
@@ -51,6 +56,16 @@ message MsgGridnodeUndelegate {
 }
 
 message MsgGridnodeUndelegateResponse {
-  string tx_hash = 1; // Transaction hash of the delegated tokens operation
-  string status = 2;  // Status of the operation, e.g., "success" or "failure"
+  string status = 1;
+}
+
+message MsgRegisterKeys {
+  bytes account = 1;
+  repeated string keys = 2;
+  int64 timestamp = 3; // Timestamp in Unix format or
+  string unique_id = 4; // unique identifier UUID
+}
+
+message MsgRegisterKeysResponse {
+  string status = 1;
 }
