@@ -42,7 +42,7 @@ func CmdAccountKeys() *cobra.Command {
 
 func CmdAllKeys() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "all-keys",
+		Use:   "get-all-keys",
 		Short: "Query all keys across all accounts",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
