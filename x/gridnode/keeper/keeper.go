@@ -219,23 +219,30 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 
 		fmt.Printf("Delegator Address: %s, Delegated Amount: %s\n", accountAddr, delegatedAmount)
 
-		// Convert string to sdk.AccAddress
-		delegatorAddr := sdk.AccAddress(key)
+		// Convert the account address string to sdk.AccAddress
+		delegatorAddr, err := sdk.AccAddressFromBech32(accountAddr)
+		if err != nil {
+			fmt.Printf("Error converting account address: %v\n", err)
+			continue // or return an error
+		}
 
-		// Get unbonding entries for the account
+		// Define the key for the unbonding entries based on the delegator's address and block height
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
-		var unbondingEntries []types.UnbondingEntry = []types.UnbondingEntry{}
+
+		// Retrieve the value from the store
 		bz := store.Get(unbondingKey)
 		if bz == nil {
 			fmt.Println("store.Get returned nil")
-		} else {
-			err := json.Unmarshal(bz, &unbondingEntries)
-			if err != nil {
-				fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
-				return nil, err
-			}
+			continue // or return an error
 		}
-		fmt.Printf("Unbonding Entries: %v\n", unbondingEntries)
+
+		// Deserialize the byte value to a list of unbonding entries
+		var unbondingEntries []types.UnbondingEntry
+		err = json.Unmarshal(bz, &unbondingEntries)
+		if err != nil {
+			fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
+			continue // or return an error
+		}
 
 		// Sum up the unbonding amounts
 		var unbondingAmount sdkmath.Int = sdkmath.NewInt(0) // initialize to zero
