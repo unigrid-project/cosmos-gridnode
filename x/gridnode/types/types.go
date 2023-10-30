@@ -10,12 +10,6 @@ type Gridnode struct {
 	Owner sdk.AccAddress // This is the owner of the gridnode
 }
 
-// type UnbondingEntry struct {
-// 	Delegator      sdk.AccAddress `json:"delegator" yaml:"delegator"`
-// 	Amount         math.Int       `json:"amount" yaml:"amount"`
-// 	CompletionTime time.Time      `json:"completion_time" yaml:"completion_time"`
-// }
-
 const (
 	EventTypeDelegate          = "delegate"
 	EventTypeUndelegate        = "undelegate"
