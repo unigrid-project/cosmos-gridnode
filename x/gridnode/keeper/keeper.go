@@ -220,13 +220,15 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		// Get unbonding entries for the account
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
 		var unbondingEntries []types.UnbondingEntry = []types.UnbondingEntry{}
-
-		if bz := store.Get(unbondingKey); bz != nil {
-			if err := json.Unmarshal(bz, &unbondingEntries); err != nil {
+		bz := store.Get(unbondingKey)
+		if bz == nil {
+			fmt.Println("store.Get returned nil")
+		} else {
+			err := json.Unmarshal(bz, &unbondingEntries)
+			if err != nil {
 				fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
 				return nil, err
 			}
-
 		}
 
 		// Sum up the unbonding amounts
@@ -234,7 +236,9 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		for _, entry := range unbondingEntries {
 			unbondingAmount = unbondingAmount.Add(sdkmath.NewInt(entry.Amount))
 		}
-
+		fmt.Printf("About to call Int64 on unbondingAmount: %v\n", unbondingAmount)
+		unbondingAmountInt64 := unbondingAmount.Int64()
+		fmt.Printf("Successfully called Int64 on unbondingAmount: %v\n", unbondingAmountInt64)
 		fmt.Printf("Unbonding Entries: %v, Unbonding Amount: %s\n", unbondingEntries, unbondingAmount)
 
 		info := types.DelegationInfo{
