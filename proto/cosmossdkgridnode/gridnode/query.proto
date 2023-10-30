@@ -14,6 +14,12 @@ message UnbondingEntry {
   int64 completion_time = 3; // Use the Timestamp type for time values
 }
 
+message DelegationInfo {
+  string account = 1;
+  int64 delegated_amount = 2;
+  int64 unbonding_amount = 3;
+}
+
 // Query defines the gRPC querier service.
 service Query {
   // Parameters queries the parameters of the module.
@@ -26,6 +32,9 @@ service Query {
   }
   rpc UnbondingEntries(QueryUnbondingEntriesRequest) returns (QueryUnbondingEntriesResponse) {
     option (google.api.http).get = "/gridnode/query-unbonding/{bonding_account_address}";
+  }
+  rpc AllDelegations(QueryAllDelegationsRequest) returns (QueryAllDelegationsResponse) {
+    option (google.api.http).get = "/gridnode/all-delegations";
   }
 }
 
@@ -57,5 +66,14 @@ message QueryUnbondingEntriesRequest {
 // QueryUnbondingEntriesResponse is the response type for the Query/UnbondingEntries RPC method.
 message QueryUnbondingEntriesResponse {
   repeated UnbondingEntry unbonding_entries = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAllDelegationsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllDelegationsResponse {
+  repeated DelegationInfo delegations = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

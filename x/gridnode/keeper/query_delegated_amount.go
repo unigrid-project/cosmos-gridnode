@@ -22,7 +22,7 @@ func (k Keeper) DelegatedAmount(goCtx context.Context, req *types.QueryDelegated
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid delegator address")
 	}
-	key := k.keyForDelegator(delegatorAddr) // Replace with your actual key generation logic
+	key := k.keyForDelegator(delegatorAddr)
 
 	// Retrieve the value from the store
 	store := ctx.KVStore(k.storeKey)

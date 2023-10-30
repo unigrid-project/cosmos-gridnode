@@ -10,6 +10,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -176,6 +177,50 @@ func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkm
 	amount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(bz))
 	fmt.Println("Found Locked Balance: ", amount, " for delegator: ", delegator) // Log the amount found for the delegator
 	return amount
+}
+
+func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, error) {
+	store := ctx.KVStore(k.storeKey)
+	delegatedAmountPrefixStore := prefix.NewStore(store, []byte(delegatedAmountPrefix))
+
+	var delegations []types.DelegationInfo
+	iterator := delegatedAmountPrefixStore.Iterator(nil, nil)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		key := iterator.Key()
+		value := iterator.Value()
+
+		// Parse the delegator address from the key
+		delegatorAddr := sdk.AccAddress(key[len(delegatedAmountPrefix):])
+
+		// Parse the delegated amount from the value
+		delegatedAmount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(value))
+
+		// Get unbonding entries for the account
+		unbondingKey := k.keyForUnBonding(delegatorAddr)
+		var unbondingEntries []types.UnbondingEntry
+		if bz := store.Get(unbondingKey); bz != nil {
+			if err := json.Unmarshal(bz, &unbondingEntries); err != nil {
+				return nil, err
+			}
+		}
+
+		// Sum up the unbonding amounts
+		var unbondingAmount sdkmath.Int
+		for _, entry := range unbondingEntries {
+			unbondingAmount = unbondingAmount.Add(sdkmath.NewInt(entry.Amount))
+		}
+
+		info := types.DelegationInfo{
+			Account:         delegatorAddr.String(),
+			DelegatedAmount: delegatedAmount.Int64(),
+			UnbondingAmount: unbondingAmount.Int64(),
+		}
+		delegations = append(delegations, info)
+	}
+
+	return delegations, nil
 }
 
 func (k Keeper) SetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
