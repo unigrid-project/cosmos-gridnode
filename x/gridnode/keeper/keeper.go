@@ -134,6 +134,7 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 
 	// Create an UnbondingEntry
 	entry := types.UnbondingEntry{
+		Account:        account.String(),
 		Amount:         amount.Int64(),
 		CompletionTime: completionTime.Unix(),
 	}
@@ -251,12 +252,23 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 			for i := range unbondingEntries {
 				unbondingEntriesPtr[i] = &unbondingEntries[i]
 			}
+			simpleUnbondingEntries := make([]*types.SimpleUnbondingEntry, len(unbondingEntriesPtr))
+			for i, entry := range unbondingEntriesPtr {
+				simpleUnbondingEntries[i] = &types.SimpleUnbondingEntry{
+					Amount:         entry.Amount,
+					CompletionTime: entry.CompletionTime,
+				}
+			}
+
 			// Append a DelegationInfo object with the UnbondingEntries field populated
 			info := types.DelegationInfo{
 				Account:          accountAddr,
 				DelegatedAmount:  delegatedAmount.Int64(),
-				UnbondingEntries: unbondingEntriesPtr, // UnbondingEntries is populated
+				UnbondingEntries: simpleUnbondingEntries, // UnbondingEntries is populated
 			}
+			fmt.Printf("Simple Unbonding Entries: %v\n", simpleUnbondingEntries)
+			fmt.Printf("Delegation Info: %v\n", info)
+
 			delegations = append(delegations, info)
 		}
 	}
