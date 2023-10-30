@@ -235,8 +235,8 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 				return nil, err
 			}
 		}
+		fmt.Printf("Unbonding Entries: %v\n", unbondingEntries)
 
-		// Sum up the unbonding amounts
 		// Sum up the unbonding amounts
 		var unbondingAmount sdkmath.Int = sdkmath.NewInt(0) // initialize to zero
 		for _, entry := range unbondingEntries {
