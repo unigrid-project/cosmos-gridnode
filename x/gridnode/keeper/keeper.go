@@ -232,10 +232,12 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		}
 
 		// Sum up the unbonding amounts
-		var unbondingAmount sdkmath.Int
+		// Sum up the unbonding amounts
+		var unbondingAmount sdkmath.Int = sdkmath.NewInt(0) // initialize to zero
 		for _, entry := range unbondingEntries {
 			unbondingAmount = unbondingAmount.Add(sdkmath.NewInt(entry.Amount))
 		}
+
 		fmt.Printf("About to call Int64 on unbondingAmount: %v\n", unbondingAmount)
 		unbondingAmountInt64 := unbondingAmount.Int64()
 		fmt.Printf("Successfully called Int64 on unbondingAmount: %v\n", unbondingAmountInt64)
