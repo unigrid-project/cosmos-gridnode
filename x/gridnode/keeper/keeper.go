@@ -212,7 +212,7 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		}
 
 		// Extract the account address directly
-		accountAddr := string(key[len(delegatedAmountPrefix):])
+		accountAddr := string(key)
 
 		// Parse the delegated amount from the value
 		delegatedAmount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(value))
@@ -220,7 +220,7 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		fmt.Printf("Delegator Address: %s, Delegated Amount: %s\n", accountAddr, delegatedAmount)
 
 		// Convert string to sdk.AccAddress
-		delegatorAddr := sdk.AccAddress(key[len(delegatedAmountPrefix):])
+		delegatorAddr := sdk.AccAddress(key)
 
 		// Get unbonding entries for the account
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
