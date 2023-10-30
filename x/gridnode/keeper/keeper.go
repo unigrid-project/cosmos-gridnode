@@ -232,35 +232,43 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		// Retrieve the value from the store
 		bz := store.Get(unbondingKey)
 		if bz == nil {
-			fmt.Println("store.Get returned nil")
-			continue // or return an error
+			fmt.Println("Unbonding store on %s Get returned nil", delegatorAddr)
+			// Create DelegationInfo with unbonding amount of 0
+			info := types.DelegationInfo{
+				Account:         accountAddr,
+				DelegatedAmount: delegatedAmount.Int64(),
+				UnbondingAmount: 0,
+			}
+			delegations = append(delegations, info)
+			continue // skip to next iteration
+		} else {
+			// Deserialize the byte value to a list of unbonding entries
+			var unbondingEntries []types.UnbondingEntry
+			err = json.Unmarshal(bz, &unbondingEntries)
+			if err != nil {
+				fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
+				continue // or return an error
+			}
+
+			// Sum up the unbonding amounts
+			var unbondingAmount sdkmath.Int = sdkmath.NewInt(0) // initialize to zero
+			for _, entry := range unbondingEntries {
+				unbondingAmount = unbondingAmount.Add(sdkmath.NewInt(entry.Amount))
+			}
+
+			fmt.Printf("About to call Int64 on unbondingAmount: %v\n", unbondingAmount)
+			unbondingAmountInt64 := unbondingAmount.Int64()
+			fmt.Printf("Successfully called Int64 on unbondingAmount: %v\n", unbondingAmountInt64)
+			fmt.Printf("Unbonding Entries: %v, Unbonding Amount: %s\n", unbondingEntries, unbondingAmount)
+
+			info := types.DelegationInfo{
+				Account:         accountAddr,
+				DelegatedAmount: delegatedAmount.Int64(),
+				UnbondingAmount: unbondingAmount.Int64(),
+			}
+			delegations = append(delegations, info)
 		}
 
-		// Deserialize the byte value to a list of unbonding entries
-		var unbondingEntries []types.UnbondingEntry
-		err = json.Unmarshal(bz, &unbondingEntries)
-		if err != nil {
-			fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
-			continue // or return an error
-		}
-
-		// Sum up the unbonding amounts
-		var unbondingAmount sdkmath.Int = sdkmath.NewInt(0) // initialize to zero
-		for _, entry := range unbondingEntries {
-			unbondingAmount = unbondingAmount.Add(sdkmath.NewInt(entry.Amount))
-		}
-
-		fmt.Printf("About to call Int64 on unbondingAmount: %v\n", unbondingAmount)
-		unbondingAmountInt64 := unbondingAmount.Int64()
-		fmt.Printf("Successfully called Int64 on unbondingAmount: %v\n", unbondingAmountInt64)
-		fmt.Printf("Unbonding Entries: %v, Unbonding Amount: %s\n", unbondingEntries, unbondingAmount)
-
-		info := types.DelegationInfo{
-			Account:         accountAddr,
-			DelegatedAmount: delegatedAmount.Int64(),
-			UnbondingAmount: unbondingAmount.Int64(),
-		}
-		delegations = append(delegations, info)
 	}
 
 	return delegations, nil
