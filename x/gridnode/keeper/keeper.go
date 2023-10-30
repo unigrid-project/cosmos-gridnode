@@ -127,8 +127,8 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 
 	// Define the unbonding period, 21 days
 	//unbondingPeriod := time.Hour * 24 * 21
-	// Define the unbonding period, 1 minute (for testing)
-	unbondingPeriod := time.Minute
+	// Define the unbonding period, 5 minutes (for testing)
+	unbondingPeriod := time.Minute * 5
 	// Calculate the completion time for the unbonding
 	completionTime := blockTime.Add(unbondingPeriod)
 
@@ -202,29 +202,29 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 	for ; iterator.Valid(); iterator.Next() {
 		key := iterator.Key()
 		value := iterator.Value()
-		fmt.Printf("Key: %s\n", key)
-		fmt.Printf("value: %s\n", value)
+
+		fmt.Printf("Key: %s, Value: %s\n", key, value)
+
 		// Ensure the key is long enough to slice
 		if len(key) < len(delegatedAmountPrefix) {
 			fmt.Printf("Key is too short: %s\n", key)
 			continue // or return an error
 		}
 
-		// Extract the Bech32 part directly
-		bech32Addr := string(key[len(delegatedAmountPrefix):])
-
-		// Now attempt to decode it to an AccAddress
-		delegatorAddr, err := sdk.AccAddressFromBech32(bech32Addr)
-		if err != nil {
-			fmt.Printf("Error decoding delegator address: %v\n", err)
-			continue // or return an error
-		}
+		// Extract the account address directly
+		accountAddr := string(key[len(delegatedAmountPrefix):])
 
 		// Parse the delegated amount from the value
 		delegatedAmount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(value))
 
-		fmt.Printf("Delegator Address: %s, Delegated Amount: %s\n", delegatorAddr, delegatedAmount)
+		fmt.Printf("Delegator Address: %s, Delegated Amount: %s\n", accountAddr, delegatedAmount)
 
+		// Convert string to sdk.AccAddress
+		delegatorAddr, err := sdk.AccAddressFromBech32(accountAddr)
+		if err != nil {
+			fmt.Printf("Error decoding delegator address: %v\n", err)
+			return nil, err
+		}
 		// Get unbonding entries for the account
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
 		var unbondingEntries []types.UnbondingEntry = []types.UnbondingEntry{}
@@ -252,7 +252,7 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		fmt.Printf("Unbonding Entries: %v, Unbonding Amount: %s\n", unbondingEntries, unbondingAmount)
 
 		info := types.DelegationInfo{
-			Account:         delegatorAddr.String(),
+			Account:         accountAddr,
 			DelegatedAmount: delegatedAmount.Int64(),
 			UnbondingAmount: unbondingAmount.Int64(),
 		}
