@@ -210,7 +210,13 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		}
 
 		// Parse the delegator address from the key
-		delegatorAddr := sdk.AccAddress(key[len(delegatedAmountPrefix):])
+		bech32Addr := string(key[len(delegatedAmountPrefix):])
+		delegatorAddr, err := sdk.AccAddressFromBech32(bech32Addr)
+		if err != nil {
+			// Handle the error (e.g., log it and continue or return it)
+			fmt.Printf("Error decoding delegator address: %v\n", err)
+			continue // or return nil, err
+		}
 
 		// Parse the delegated amount from the value
 		delegatedAmount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(value))
