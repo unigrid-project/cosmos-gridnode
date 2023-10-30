@@ -14,15 +14,10 @@ message UnbondingEntry {
   int64 completion_time = 3; // Use the Timestamp type for time values
 }
 
-message SimpleUnbondingEntry {
-  int64 amount = 1;
-  int64 completion_time = 2;
-}
-
 message DelegationInfo {
   string account = 1;
   int64 delegated_amount = 2;
-  repeated SimpleUnbondingEntry unbonding_entries = 3; // New field for unbonding entries
+  repeated UnbondingEntry unbonding_entries = 3; // New field for unbonding entries
 }
 
 // Query defines the gRPC querier service.

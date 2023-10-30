@@ -227,11 +227,9 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 
 		// Define the key for the unbonding entries based on the delegator's address and block height
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
-		fmt.Printf("Unbonding Key: %s\n", unbondingKey)
 
 		// Retrieve the value from the store
 		bz := store.Get(unbondingKey)
-
 		if bz == nil {
 			// If bz is nil, append a DelegationInfo object with an empty UnbondingEntries field
 			info := types.DelegationInfo{
@@ -248,31 +246,17 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 				fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
 				continue // or return an error
 			}
-
 			// Convert slice of UnbondingEntry to slice of pointers to UnbondingEntry
 			unbondingEntriesPtr := make([]*types.UnbondingEntry, len(unbondingEntries))
 			for i := range unbondingEntries {
 				unbondingEntriesPtr[i] = &unbondingEntries[i]
 			}
-			fmt.Printf("Unbonding Entries: %v\n", unbondingEntriesPtr)
-
-			simpleUnbondingEntries := make([]*types.SimpleUnbondingEntry, len(unbondingEntriesPtr))
-			for i, entry := range unbondingEntriesPtr {
-				simpleUnbondingEntries[i] = &types.SimpleUnbondingEntry{
-					Amount:         entry.Amount,
-					CompletionTime: entry.CompletionTime,
-				}
-			}
-
 			// Append a DelegationInfo object with the UnbondingEntries field populated
 			info := types.DelegationInfo{
 				Account:          accountAddr,
 				DelegatedAmount:  delegatedAmount.Int64(),
-				UnbondingEntries: simpleUnbondingEntries, // UnbondingEntries is populated
+				UnbondingEntries: unbondingEntriesPtr, // UnbondingEntries is populated
 			}
-			fmt.Printf("Simple Unbonding Entries: %v\n", simpleUnbondingEntries)
-			fmt.Printf("Delegation Info: %v\n", info)
-
 			delegations = append(delegations, info)
 		}
 	}
