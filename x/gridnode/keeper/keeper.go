@@ -219,7 +219,8 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 
 		// Get unbonding entries for the account
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
-		var unbondingEntries []types.UnbondingEntry
+		var unbondingEntries []types.UnbondingEntry = []types.UnbondingEntry{}
+
 		if bz := store.Get(unbondingKey); bz != nil {
 			if err := json.Unmarshal(bz, &unbondingEntries); err != nil {
 				fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
