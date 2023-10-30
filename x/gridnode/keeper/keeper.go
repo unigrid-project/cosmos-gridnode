@@ -220,11 +220,8 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		fmt.Printf("Delegator Address: %s, Delegated Amount: %s\n", accountAddr, delegatedAmount)
 
 		// Convert string to sdk.AccAddress
-		delegatorAddr, err := sdk.AccAddressFromBech32(accountAddr)
-		if err != nil {
-			fmt.Printf("Error decoding delegator address: %v\n", err)
-			return nil, err
-		}
+		delegatorAddr := sdk.AccAddress(key[len(delegatedAmountPrefix):])
+
 		// Get unbonding entries for the account
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
 		var unbondingEntries []types.UnbondingEntry = []types.UnbondingEntry{}
