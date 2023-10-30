@@ -17,7 +17,7 @@ message UnbondingEntry {
 message DelegationInfo {
   string account = 1;
   int64 delegated_amount = 2;
-  int64 unbonding_amount = 3;
+  repeated UnbondingEntry unbonding_entries = 3; // New field for unbonding entries
 }
 
 // Query defines the gRPC querier service.

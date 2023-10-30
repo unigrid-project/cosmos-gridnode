@@ -232,15 +232,13 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		// Retrieve the value from the store
 		bz := store.Get(unbondingKey)
 		if bz == nil {
-			fmt.Println("Unbonding store on %s Get returned nil", delegatorAddr)
-			// Create DelegationInfo with unbonding amount of 0
+			// If bz is nil, append a DelegationInfo object with an empty UnbondingEntries field
 			info := types.DelegationInfo{
-				Account:         accountAddr,
-				DelegatedAmount: delegatedAmount.Int64(),
-				UnbondingAmount: 0,
+				Account:          accountAddr,
+				DelegatedAmount:  delegatedAmount.Int64(),
+				UnbondingEntries: nil, // UnbondingEntries is nil
 			}
 			delegations = append(delegations, info)
-			continue // skip to next iteration
 		} else {
 			// Deserialize the byte value to a list of unbonding entries
 			var unbondingEntries []types.UnbondingEntry
@@ -249,26 +247,19 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 				fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
 				continue // or return an error
 			}
-
-			// Sum up the unbonding amounts
-			var unbondingAmount sdkmath.Int = sdkmath.NewInt(0) // initialize to zero
-			for _, entry := range unbondingEntries {
-				unbondingAmount = unbondingAmount.Add(sdkmath.NewInt(entry.Amount))
+			// Convert slice of UnbondingEntry to slice of pointers to UnbondingEntry
+			unbondingEntriesPtr := make([]*types.UnbondingEntry, len(unbondingEntries))
+			for i := range unbondingEntries {
+				unbondingEntriesPtr[i] = &unbondingEntries[i]
 			}
-
-			fmt.Printf("About to call Int64 on unbondingAmount: %v\n", unbondingAmount)
-			unbondingAmountInt64 := unbondingAmount.Int64()
-			fmt.Printf("Successfully called Int64 on unbondingAmount: %v\n", unbondingAmountInt64)
-			fmt.Printf("Unbonding Entries: %v, Unbonding Amount: %s\n", unbondingEntries, unbondingAmount)
-
+			// Append a DelegationInfo object with the UnbondingEntries field populated
 			info := types.DelegationInfo{
-				Account:         accountAddr,
-				DelegatedAmount: delegatedAmount.Int64(),
-				UnbondingAmount: unbondingAmount.Int64(),
+				Account:          accountAddr,
+				DelegatedAmount:  delegatedAmount.Int64(),
+				UnbondingEntries: unbondingEntriesPtr, // UnbondingEntries is populated
 			}
 			delegations = append(delegations, info)
 		}
-
 	}
 
 	return delegations, nil
