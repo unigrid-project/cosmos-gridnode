@@ -202,20 +202,22 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 	for ; iterator.Valid(); iterator.Next() {
 		key := iterator.Key()
 		value := iterator.Value()
-		fmt.Printf("Key: %s, Value: %x\n", key, value)
-
+		fmt.Printf("Key: %s\n", key)
+		fmt.Printf("value: %s\n", value)
+		// Ensure the key is long enough to slice
 		if len(key) < len(delegatedAmountPrefix) {
 			fmt.Printf("Key is too short: %s\n", key)
 			continue // or return an error
 		}
 
-		// Parse the delegator address from the key
+		// Extract the Bech32 part directly
 		bech32Addr := string(key[len(delegatedAmountPrefix):])
+
+		// Now attempt to decode it to an AccAddress
 		delegatorAddr, err := sdk.AccAddressFromBech32(bech32Addr)
 		if err != nil {
-			// Handle the error (e.g., log it and continue or return it)
 			fmt.Printf("Error decoding delegator address: %v\n", err)
-			continue // or return nil, err
+			continue // or return an error
 		}
 
 		// Parse the delegated amount from the value
