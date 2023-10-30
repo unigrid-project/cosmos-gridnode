@@ -227,9 +227,11 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 
 		// Define the key for the unbonding entries based on the delegator's address and block height
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
+		fmt.Printf("Unbonding Key: %s\n", unbondingKey)
 
 		// Retrieve the value from the store
 		bz := store.Get(unbondingKey)
+
 		if bz == nil {
 			// If bz is nil, append a DelegationInfo object with an empty UnbondingEntries field
 			info := types.DelegationInfo{
