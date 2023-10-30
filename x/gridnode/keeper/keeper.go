@@ -168,6 +168,7 @@ func (k Keeper) GetBankKeeper() types.BankKeeper {
 func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
 	store := ctx.KVStore(k.storeKey)
 	key := k.keyForDelegator(delegator)
+
 	fmt.Println("Getting Locked Balance for delegator: ", delegator, " with key: ", string(key)) // Log the delegator and the key being used to get the balance
 	bz := store.Get(key)
 	if bz == nil {
@@ -181,15 +182,32 @@ func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkm
 
 func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, error) {
 	store := ctx.KVStore(k.storeKey)
+
+	if store == nil {
+		return nil, errors.New("store is nil", 0, "QueryAllDelegations")
+	}
+
 	delegatedAmountPrefixStore := prefix.NewStore(store, []byte(delegatedAmountPrefix))
 
 	var delegations []types.DelegationInfo
+
 	iterator := delegatedAmountPrefixStore.Iterator(nil, nil)
+
+	if iterator == nil {
+		return nil, errors.New("iterator is nil", 0, "QueryAllDelegations")
+	}
+
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
 		key := iterator.Key()
 		value := iterator.Value()
+		fmt.Printf("Key: %s, Value: %x\n", key, value)
+
+		if len(key) < len(delegatedAmountPrefix) {
+			fmt.Printf("Key is too short: %s\n", key)
+			continue // or return an error
+		}
 
 		// Parse the delegator address from the key
 		delegatorAddr := sdk.AccAddress(key[len(delegatedAmountPrefix):])
@@ -197,13 +215,17 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		// Parse the delegated amount from the value
 		delegatedAmount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(value))
 
+		fmt.Printf("Delegator Address: %s, Delegated Amount: %s\n", delegatorAddr, delegatedAmount)
+
 		// Get unbonding entries for the account
 		unbondingKey := k.keyForUnBonding(delegatorAddr)
 		var unbondingEntries []types.UnbondingEntry
 		if bz := store.Get(unbondingKey); bz != nil {
 			if err := json.Unmarshal(bz, &unbondingEntries); err != nil {
+				fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
 				return nil, err
 			}
+
 		}
 
 		// Sum up the unbonding amounts
@@ -211,6 +233,8 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 		for _, entry := range unbondingEntries {
 			unbondingAmount = unbondingAmount.Add(sdkmath.NewInt(entry.Amount))
 		}
+
+		fmt.Printf("Unbonding Entries: %v, Unbonding Amount: %s\n", unbondingEntries, unbondingAmount)
 
 		info := types.DelegationInfo{
 			Account:         delegatorAddr.String(),
