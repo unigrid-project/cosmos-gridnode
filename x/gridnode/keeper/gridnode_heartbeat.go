@@ -39,7 +39,7 @@ func NewHeartbeatManager(storeKey store.StoreKey, keeper *Keeper) *HeartbeatMana
 	}
 }
 
-func (hm *HeartbeatManager) SendHeartbeatIfDataChanged(ctx sdk.Context, data []Delegation) {
+func (hm *HeartbeatManager) SendHeartbeatIfDataChanged(ctx sdk.Context, data []Delegation) error {
 	fmt.Println("Checking for data changes...")
 	store := ctx.KVStore(hm.StoreKey)
 	newHashBytes := sha256.Sum256([]byte(fmt.Sprintf("%v", data)))
@@ -61,17 +61,28 @@ func (hm *HeartbeatManager) SendHeartbeatIfDataChanged(ctx sdk.Context, data []D
 	} else {
 		fmt.Println("No data change detected.")
 	}
+	return nil
 }
 
 func (hm *HeartbeatManager) sendHeartbeat(data []Delegation) error {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to marshal data: %w", err)
 	}
 
-	resp, err := http.Post(heartbeatURL, "application/json", bytes.NewBuffer(jsonData))
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	req, err := http.NewRequest("POST", heartbeatURL, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send heartbeat: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -87,14 +98,28 @@ func (hm *HeartbeatManager) StartHeartbeatTimer(ctx sdk.Context) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
+	// Check for a cancellation signal to stop the goroutine
+	ctxDone := ctx.Done()
+
 	for {
 		select {
 		case <-ticker.C:
 			fmt.Println("Fetching delegation data...")
-			data := hm.GetDelegationData(ctx)
+			data, err := hm.GetDelegationData(ctx)
+			if err != nil {
+				fmt.Printf("Error fetching delegations: %v\n", err)
+				continue // Skip this iteration if there's an error
+			}
 			fmt.Printf("Fetched %d delegations.\n", len(data))
 			fmt.Println("Sending heartbeat if data changed...")
-			hm.SendHeartbeatIfDataChanged(ctx, data)
+			err = hm.SendHeartbeatIfDataChanged(ctx, data)
+			if err != nil {
+				fmt.Printf("Error sending heartbeat: %v\n", err)
+			}
+		case <-ctxDone:
+			// Context was cancelled, exit the goroutine
+			fmt.Println("Heartbeat timer cancelled, exiting...")
+			return
 		}
 	}
 }
@@ -110,11 +135,11 @@ func processDelegations(chunk []types.DelegationInfo, results chan<- Delegation,
 	}
 }
 
-func (hm *HeartbeatManager) GetDelegationData(ctx sdk.Context) []Delegation {
+func (hm *HeartbeatManager) GetDelegationData(ctx sdk.Context) ([]Delegation, error) {
 	delegations, err := hm.Keeper.QueryAllDelegations(ctx)
 	if err != nil {
 		fmt.Println(err)
-		return nil
+		return nil, err // Return the error along with a nil slice
 	}
 
 	numWorkers := 4 // adjust this based on your needs
@@ -143,5 +168,5 @@ func (hm *HeartbeatManager) GetDelegationData(ctx sdk.Context) []Delegation {
 		simplifiedDelegations = append(simplifiedDelegations, result)
 	}
 
-	return simplifiedDelegations
+	return simplifiedDelegations, nil
 }
