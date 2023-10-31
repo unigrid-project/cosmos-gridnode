@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"sync"
 	"time"
 
@@ -41,13 +42,19 @@ func NewHeartbeatManager(storeKey store.StoreKey, keeper *Keeper) *HeartbeatMana
 
 func (hm *HeartbeatManager) SendHeartbeatIfDataChanged(ctx sdk.Context, data []Delegation) error {
 	fmt.Println("Checking for data changes...")
+
+	// Sort the data slice based on the Account field before hashing it
+	sort.Slice(data, func(i, j int) bool {
+		return data[i].Account < data[j].Account
+	})
+
 	store := ctx.KVStore(hm.StoreKey)
 	newHashBytes := sha256.Sum256([]byte(fmt.Sprintf("%v", data)))
 	newHash := hex.EncodeToString(newHashBytes[:])
-
+	fmt.Printf("New Hash: %s", newHash)
 	oldHashBytes := store.Get([]byte(hashKey))
 	oldHash := string(oldHashBytes)
-
+	fmt.Printf("Old Hash: %s", oldHash)
 	if oldHash != newHash {
 		fmt.Println("Data has changed, sending heartbeat...")
 		err := hm.sendHeartbeat(data)
