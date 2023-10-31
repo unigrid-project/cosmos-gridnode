@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"sync"
 	"time"
 
 	"cosmossdk.io/errors"
@@ -190,6 +191,8 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 	delegatedAmountPrefixStore := prefix.NewStore(store, []byte(delegatedAmountPrefix))
 
 	var delegations []types.DelegationInfo
+	var mu sync.Mutex
+	var wg sync.WaitGroup
 
 	iterator := delegatedAmountPrefixStore.Iterator(nil, nil)
 
@@ -200,78 +203,80 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		key := iterator.Key()
-		value := iterator.Value()
+		wg.Add(1) // Increment the WaitGroup counter
+		go func(key, value []byte) {
+			defer wg.Done() // Decrement the counter when the goroutine completes
 
-		fmt.Printf("Key: %s, Value: %s\n", key, value)
-
-		// Ensure the key is long enough to slice
-		if len(key) < len(delegatedAmountPrefix) {
-			fmt.Printf("Key is too short: %s\n", key)
-			continue // or return an error
-		}
-
-		// Extract the account address directly
-		accountAddr := string(key)
-
-		// Parse the delegated amount from the value
-		delegatedAmount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(value))
-
-		fmt.Printf("Delegator Address: %s, Delegated Amount: %s\n", accountAddr, delegatedAmount)
-
-		// Convert the account address string to sdk.AccAddress
-		delegatorAddr, err := sdk.AccAddressFromBech32(accountAddr)
-		if err != nil {
-			fmt.Printf("Error converting account address: %v\n", err)
-			continue // or return an error
-		}
-
-		// Define the key for the unbonding entries based on the delegator's address and block height
-		unbondingKey := k.keyForUnBonding(delegatorAddr)
-
-		// Retrieve the value from the store
-		bz := store.Get(unbondingKey)
-		if bz == nil {
-			// If bz is nil, append a DelegationInfo object with an empty UnbondingEntries field
-			info := types.DelegationInfo{
-				Account:          accountAddr,
-				DelegatedAmount:  delegatedAmount.Int64(),
-				UnbondingEntries: nil, // UnbondingEntries is nil
+			// Ensure the key is long enough to slice
+			if len(key) < len(delegatedAmountPrefix) {
+				fmt.Printf("Key is too short: %s\n", key)
+				return // or return an error
 			}
-			delegations = append(delegations, info)
-		} else {
-			// Deserialize the byte value to a list of unbonding entries
-			var unbondingEntries []types.UnbondingEntry
-			err = json.Unmarshal(bz, &unbondingEntries)
+
+			// Extract the account address directly
+			accountAddr := string(key)
+
+			// Parse the delegated amount from the value
+			delegatedAmount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(value))
+
+			// Convert the account address string to sdk.AccAddress
+			delegatorAddr, err := sdk.AccAddressFromBech32(accountAddr)
 			if err != nil {
-				fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
-				continue // or return an error
+				fmt.Printf("Error converting account address: %v\n", err)
+				return // or return an error
 			}
-			// Convert slice of UnbondingEntry to slice of pointers to UnbondingEntry
-			unbondingEntriesPtr := make([]*types.UnbondingEntry, len(unbondingEntries))
-			for i := range unbondingEntries {
-				unbondingEntriesPtr[i] = &unbondingEntries[i]
-			}
-			simpleUnbondingEntries := make([]*types.SimpleUnbondingEntry, len(unbondingEntriesPtr))
-			for i, entry := range unbondingEntriesPtr {
-				simpleUnbondingEntries[i] = &types.SimpleUnbondingEntry{
-					Amount:         entry.Amount,
-					CompletionTime: entry.CompletionTime,
+
+			// Define the key for the unbonding entries based on the delegator's address and block height
+			unbondingKey := k.keyForUnBonding(delegatorAddr)
+
+			// Retrieve the value from the store
+			bz := store.Get(unbondingKey)
+			if bz == nil {
+				// If bz is nil, append a DelegationInfo object with an empty UnbondingEntries field
+				info := types.DelegationInfo{
+					Account:          accountAddr,
+					DelegatedAmount:  delegatedAmount.Int64(),
+					UnbondingEntries: nil, // UnbondingEntries is nil
 				}
+				mu.Lock() // Lock the mutex to prevent concurrent write to the slice
+				delegations = append(delegations, info)
+				mu.Unlock() // Unlock the mutex after writing to the slice
+			} else {
+				// Deserialize the byte value to a list of unbonding entries
+				var unbondingEntries []types.UnbondingEntry
+				err = json.Unmarshal(bz, &unbondingEntries)
+				if err != nil {
+					fmt.Printf("Error unmarshalling unbonding entries: %v\n", err)
+					return // or return an error
+				}
+				// Convert slice of UnbondingEntry to slice of pointers to UnbondingEntry
+				unbondingEntriesPtr := make([]*types.UnbondingEntry, len(unbondingEntries))
+				for i := range unbondingEntries {
+					unbondingEntriesPtr[i] = &unbondingEntries[i]
+				}
+				simpleUnbondingEntries := make([]*types.SimpleUnbondingEntry, len(unbondingEntriesPtr))
+				for i, entry := range unbondingEntriesPtr {
+					simpleUnbondingEntries[i] = &types.SimpleUnbondingEntry{
+						Amount:         entry.Amount,
+						CompletionTime: entry.CompletionTime,
+					}
+				}
+
+				// Append a DelegationInfo object with the UnbondingEntries field populated
+				info := types.DelegationInfo{
+					Account:          accountAddr,
+					DelegatedAmount:  delegatedAmount.Int64(),
+					UnbondingEntries: simpleUnbondingEntries, // UnbondingEntries is populated
+				}
+				mu.Lock() // Lock the mutex to prevent concurrent write to the slice
+				delegations = append(delegations, info)
+				mu.Unlock() // Unlock the mutex after writing to the slice
 			}
 
-			// Append a DelegationInfo object with the UnbondingEntries field populated
-			info := types.DelegationInfo{
-				Account:          accountAddr,
-				DelegatedAmount:  delegatedAmount.Int64(),
-				UnbondingEntries: simpleUnbondingEntries, // UnbondingEntries is populated
-			}
-			fmt.Printf("Simple Unbonding Entries: %v\n", simpleUnbondingEntries)
-			fmt.Printf("Delegation Info: %v\n", info)
-
-			delegations = append(delegations, info)
-		}
+		}(iterator.Key(), iterator.Value()) // Pass key and value as arguments to the goroutine
 	}
+
+	wg.Wait() // Wait for all goroutines to complete
 
 	return delegations, nil
 }
