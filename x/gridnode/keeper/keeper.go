@@ -20,12 +20,13 @@ import (
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   storetypes.StoreKey
-		memKey     storetypes.StoreKey
-		paramstore paramtypes.Subspace
-		bankKeeper types.BankKeeper
-		govKeeper  types.GovKeeper
+		cdc          codec.BinaryCodec
+		storeKey     storetypes.StoreKey
+		memKey       storetypes.StoreKey
+		paramstore   paramtypes.Subspace
+		bankKeeper   types.BankKeeper
+		govKeeper    types.GovKeeper
+		heartbeatMgr *HeartbeatManager
 	}
 )
 
@@ -37,18 +38,21 @@ func NewKeeper(
 	bk types.BankKeeper,
 
 ) *Keeper {
-	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
 
-	return &Keeper{
+	keeper := &Keeper{
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
 		paramstore: ps,
 		bankKeeper: bk,
 	}
+
+	keeper.heartbeatMgr = NewHeartbeatManager(storeKey, keeper)
+
+	return keeper
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
@@ -128,7 +132,7 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 
 	// Define the unbonding period, 21 days
 	//unbondingPeriod := time.Hour * 24 * 21
-	// Define the unbonding period, 5 minutes (for testing)
+	// Define the unbonding period, (for testing)
 	unbondingPeriod := time.Hour
 	// Calculate the completion time for the unbonding
 	completionTime := blockTime.Add(unbondingPeriod)
@@ -354,4 +358,9 @@ func (k Keeper) AddUnbondingEntry(ctx sdk.Context, entry types.UnbondingEntry) e
 	store.Set(key, bz)
 
 	return nil
+}
+
+func (k *Keeper) StartHeartbeatTimer(ctx sdk.Context) {
+	fmt.Println("Starting the heartbeat timer")
+	k.heartbeatMgr.StartHeartbeatTimer(ctx)
 }
