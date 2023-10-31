@@ -78,7 +78,7 @@ func (msg *MsgGridnodeUndelegate) Type() string {
 }
 
 func (msg MsgGridnodeUndelegate) ValidateBasic() error {
-	fmt.Println("Delegator Address:", msg.DelegatorAddress)
+	//fmt.Println("Delegator Address:", msg.DelegatorAddress)
 	if msg.DelegatorAddress == "" {
 		return sdkerrors.ErrInvalidAddress
 	}

@@ -15,7 +15,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// Get the current block time
 	currentTime := ctx.BlockTime()
 
-	fmt.Println("BeginBlocker started. Current block time:", currentTime)
+	//fmt.Println("BeginBlocker started. Current block time:", currentTime)
 
 	// Iterate over all unbonding entries
 	store := ctx.KVStore(k.GetStoreKey())
@@ -38,7 +38,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			timestamp := time.Unix(entry.CompletionTime, 0)
 
 			if currentTime.After(timestamp) {
-				fmt.Printf("Processing unbonding for delegator: %s, amount: %s\n", entry.Account, entry.Amount)
+				//fmt.Printf("Processing unbonding for delegator: %s, amount: %s\n", entry.Account, entry.Amount)
 				bankKeeper := k.GetBankKeeper()
 				// Process the unbonding
 				delegatorAddr, err := sdk.AccAddressFromBech32(entry.Account)
@@ -85,7 +85,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				continue
 			}
 			store.Set(key, bz)
-			fmt.Printf("Updated unbonding entries for key: %s\n", key)
+			//fmt.Printf("Updated unbonding entries for key: %s\n", key)
 		}
 	}
 

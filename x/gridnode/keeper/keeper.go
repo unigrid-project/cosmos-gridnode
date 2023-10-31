@@ -98,7 +98,7 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 // UndelegateTokens unlocks the tokens from gridnode delegation
 func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount sdkmath.Int) error {
 	// ... similar logic to release the tokens
-	fmt.Println("UndelegateTokens: ", account, amount)
+	//fmt.Println("UndelegateTokens: ", account, amount)
 	// Retrieve the current unbonding entries for the account
 	store := ctx.KVStore(k.storeKey)
 	key := k.keyForUnBonding(account)
@@ -129,7 +129,7 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 	// Define the unbonding period, 21 days
 	//unbondingPeriod := time.Hour * 24 * 21
 	// Define the unbonding period, 5 minutes (for testing)
-	unbondingPeriod := time.Minute * 5
+	unbondingPeriod := time.Hour
 	// Calculate the completion time for the unbonding
 	completionTime := blockTime.Add(unbondingPeriod)
 
@@ -312,7 +312,7 @@ func (k Keeper) GetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress) sd
 		return sdkmath.ZeroInt()
 	}
 	amount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(byteValue))
-	fmt.Println("Delegated amount for address", delegator, "is:", amount)
+	//fmt.Println("Delegated amount for address", delegator, "is:", amount)
 	return amount
 }
 
@@ -323,7 +323,7 @@ func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, am
 		// Handle negative amounts, perhaps log an error or panic
 	}
 	store.Set(k.keyForDelegator(delegator), amount.BigInt().Bytes())
-	fmt.Println("Set delegated amount for address", delegator, "to:", amount)
+	//fmt.Println("Set delegated amount for address", delegator, "to:", amount)
 }
 
 // AddUnbondingEntry adds a new unbonding entry for a given account.
