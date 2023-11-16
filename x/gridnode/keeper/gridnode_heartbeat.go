@@ -90,7 +90,7 @@ func (hm *HeartbeatManager) sendHeartbeat(data []Delegation) error {
 		Timeout:   10 * time.Second,
 	}
 
-	req, err := http.NewRequest("POST", heartbeatURL, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("PUT", heartbeatURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
