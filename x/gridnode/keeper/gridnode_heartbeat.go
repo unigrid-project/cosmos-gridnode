@@ -12,20 +12,21 @@ import (
 	"time"
 
 	store "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/spf13/viper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 )
 
 const (
-	heartbeatURL = "http://127.0.0.1:5000/gridnode/heartbeat"
-	interval     = 1 * time.Minute
-	hashKey      = "lastHashKey"
+	interval = 1 * time.Minute
+	hashKey  = "lastHashKey"
 )
 
 type HeartbeatManager struct {
-	StoreKey store.StoreKey
-	Keeper   *Keeper
+	hedgehogUrl string
+	StoreKey    store.StoreKey
+	Keeper      *Keeper
 }
 
 type Delegation struct {
@@ -72,6 +73,8 @@ func (hm *HeartbeatManager) SendHeartbeatIfDataChanged(ctx sdk.Context, data []D
 }
 
 func (hm *HeartbeatManager) sendHeartbeat(data []Delegation) error {
+	base := viper.GetString("hedgehog.hedgehog_url")
+	heartbeatURL := base + "/gridnode/heartbeat"
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal data: %w", err)
@@ -176,4 +179,12 @@ func (hm *HeartbeatManager) GetDelegationData(ctx sdk.Context) ([]Delegation, er
 	}
 
 	return simplifiedDelegations, nil
+}
+
+func (hm *HeartbeatManager) SetHedgehogUrl(url string) {
+	hm.hedgehogUrl = url
+}
+
+func (hm *HeartbeatManager) GetHedgehogUrl() string {
+	return hm.hedgehogUrl
 }
