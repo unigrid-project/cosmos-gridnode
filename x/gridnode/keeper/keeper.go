@@ -367,6 +367,5 @@ func (k *Keeper) StartHeartbeatTimer(ctx sdk.Context) {
 		return
 	}
 	fmt.Println("Starting the heartbeat timer")
-	k.heartbeatMgr.StartHeartbeatTimer(ctx)
-
+	go k.heartbeatMgr.StartHeartbeatTimer(ctx)
 }
