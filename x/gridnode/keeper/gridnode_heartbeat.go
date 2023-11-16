@@ -24,9 +24,8 @@ const (
 )
 
 type HeartbeatManager struct {
-	hedgehogUrl string
-	StoreKey    store.StoreKey
-	Keeper      *Keeper
+	StoreKey store.StoreKey
+	Keeper   *Keeper
 }
 
 type Delegation struct {
@@ -179,12 +178,4 @@ func (hm *HeartbeatManager) GetDelegationData(ctx sdk.Context) ([]Delegation, er
 	}
 
 	return simplifiedDelegations, nil
-}
-
-func (hm *HeartbeatManager) SetHedgehogUrl(url string) {
-	hm.hedgehogUrl = url
-}
-
-func (hm *HeartbeatManager) GetHedgehogUrl() string {
-	return hm.hedgehogUrl
 }

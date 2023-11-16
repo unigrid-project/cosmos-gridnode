@@ -1,6 +1,8 @@
 package gridnode
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/keeper"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
@@ -9,6 +11,7 @@ import (
 // InitGenesis initializes the module's state from a provided genesis state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
 	// this line is used by starport scaffolding # genesis/module/init
+	fmt.Println("InitGenesis gridnode module")
 	k.SetParams(ctx, genState.Params)
 	go k.StartHeartbeatTimer(ctx) // Run StartHeartbeatTimer in a separate goroutine
 }
