@@ -26,6 +26,7 @@ const (
 type HeartbeatManager struct {
 	StoreKey store.StoreKey
 	Keeper   *Keeper
+	started  bool
 }
 
 type Delegation struct {
@@ -103,6 +104,13 @@ func (hm *HeartbeatManager) sendHeartbeat(data []Delegation) error {
 }
 
 func (hm *HeartbeatManager) StartHeartbeatTimer(ctx sdk.Context) {
+	if hm.started {
+		// If the timer has already been started, do nothing
+		return
+	}
+	// Set the started flag to true to indicate the timer has been started
+	hm.started = true
+
 	fmt.Println("Initializing heartbeat timer...")
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()

@@ -20,13 +20,14 @@ import (
 
 type (
 	Keeper struct {
-		cdc          codec.BinaryCodec
-		storeKey     storetypes.StoreKey
-		memKey       storetypes.StoreKey
-		paramstore   paramtypes.Subspace
-		bankKeeper   types.BankKeeper
-		govKeeper    types.GovKeeper
-		heartbeatMgr *HeartbeatManager
+		cdc              codec.BinaryCodec
+		storeKey         storetypes.StoreKey
+		memKey           storetypes.StoreKey
+		paramstore       paramtypes.Subspace
+		bankKeeper       types.BankKeeper
+		govKeeper        types.GovKeeper
+		heartbeatMgr     *HeartbeatManager
+		heartbeatStarted bool
 	}
 )
 
@@ -361,6 +362,11 @@ func (k Keeper) AddUnbondingEntry(ctx sdk.Context, entry types.UnbondingEntry) e
 }
 
 func (k *Keeper) StartHeartbeatTimer(ctx sdk.Context) {
+	if k.heartbeatMgr.started {
+		fmt.Println("Heartbeat timer already started")
+		return
+	}
 	fmt.Println("Starting the heartbeat timer")
 	k.heartbeatMgr.StartHeartbeatTimer(ctx)
+
 }

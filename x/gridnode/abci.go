@@ -12,6 +12,7 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+	k.StartHeartbeatTimer(ctx)
 	// Get the current block time
 	currentTime := ctx.BlockTime()
 
@@ -20,6 +21,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// Iterate over all unbonding entries
 	store := ctx.KVStore(k.GetStoreKey())
 	iterator := sdk.KVStorePrefixIterator(store, []byte(k.GetBondingPrefix()))
+
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
