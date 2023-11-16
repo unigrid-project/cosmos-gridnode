@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"crypto/sha256"
+	"crypto/tls"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -80,8 +81,13 @@ func (hm *HeartbeatManager) sendHeartbeat(data []Delegation) error {
 		return fmt.Errorf("failed to marshal data: %w", err)
 	}
 
+	// Skip TLS verification (not recommended for production)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	client := &http.Client{
-		Timeout: 10 * time.Second,
+		Transport: tr,
+		Timeout:   10 * time.Second,
 	}
 
 	req, err := http.NewRequest("POST", heartbeatURL, bytes.NewBuffer(jsonData))
