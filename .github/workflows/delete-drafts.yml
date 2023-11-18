@@ -9,11 +9,9 @@ jobs:
   delete-draft-releases:
     runs-on: ubuntu-latest
     steps:
-        - name: Delete Draft Releases
-        uses: hugo19941994/delete-draft-releases@v1.0.1
+      - name: Delete Draft Releases
+        uses: dev-drprasad/delete-draft-releases@v1.0.1
         with:
           delete_tags: true # Set this to false if you don't want to delete the tags associated with the drafts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      
