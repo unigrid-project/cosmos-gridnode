@@ -1,8 +1,9 @@
 name: Delete Draft Releases
 
-on:
-  schedule:
-    - cron: "0 0 * * *" # This will run daily. Adjust the cron schedule as needed.
+# on:
+#   schedule:
+#     - cron: "0 0 * * *" # This will run daily. Adjust the cron schedule as needed.
+on: push
 
 jobs:
   delete-draft-releases:
