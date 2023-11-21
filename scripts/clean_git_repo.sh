@@ -24,10 +24,12 @@ delete_release() {
         "https://api.github.com/repos/$GITHUB_REPO/releases/tags/$tag" |
         jq -r '.id')
 
-    # If release exists, delete it
     if [ "$release_id" != "null" ]; then
-        curl -s -X DELETE \
-            "https://api.github.com/repos/$GITHUB_REPO/releases/$release_id"
+        response=$(curl -s -X DELETE \
+            "https://api.github.com/repos/$GITHUB_REPO/releases/$release_id")
+        echo "Deleting release $release_id: $response"
+    else
+        echo "No release found for tag $tag"
     fi
 }
 

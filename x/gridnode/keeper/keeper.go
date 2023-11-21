@@ -131,10 +131,10 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 	// Retrieve current block time
 	blockTime := ctx.BlockTime()
 
-	// Define the unbonding period, 21 days
+	// Define the unbonding period, 21 days TODO: enable this for mainnet
 	//unbondingPeriod := time.Hour * 24 * 21
-	// Define the unbonding period, (for testing)
-	unbondingPeriod := time.Hour
+	// Define the unbonding period, (for testnet 1 day)
+	unbondingPeriod := time.Hour * 24 * 1
 	// Calculate the completion time for the unbonding
 	completionTime := blockTime.Add(unbondingPeriod)
 

@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	interval = 1 * time.Minute
+	interval = 10 * time.Minute
 	hashKey  = "lastHashKey"
 )
 
