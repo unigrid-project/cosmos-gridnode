@@ -1,11 +1,11 @@
 package types
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	io "io"
-	"net/http"
+
+	"github.com/unigrid-project/cosmos-sdk-common/common/httpclient"
 )
 
 type HedgehogData struct {
@@ -17,13 +17,8 @@ func IsGridnode(voterAddr string) bool {
 
 	// hedgehogUrl := viper.GetString("hedgehog.hedgehog_url") + "/gridspork/mint-storage/"
 	hedgehogUrl := "http://127.0.0.1:5000/is-active?address="
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 
-	client := &http.Client{Transport: tr}
-
-	resp, err := client.Get(hedgehogUrl + voterAddr)
+	resp, err := httpclient.Client.Get(hedgehogUrl + voterAddr)
 	if err != nil {
 		panic(err)
 	}

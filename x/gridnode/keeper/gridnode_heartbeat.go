@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"crypto/sha256"
-	"crypto/tls"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -16,6 +15,7 @@ import (
 	"github.com/spf13/viper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/unigrid-project/cosmos-sdk-common/common/httpclient"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 )
 
@@ -81,22 +81,13 @@ func (hm *HeartbeatManager) sendHeartbeat(data []Delegation) error {
 		return fmt.Errorf("failed to marshal data: %w", err)
 	}
 
-	// Skip TLS verification (not recommended for production)
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := &http.Client{
-		Transport: tr,
-		Timeout:   10 * time.Second,
-	}
-
 	req, err := http.NewRequest("PUT", heartbeatURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
+	resp, err := httpclient.Client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to send heartbeat: %w", err)
 	}

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -9,7 +10,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govutils "github.com/cosmos/cosmos-sdk/x/gov/client/utils"
+
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/spf13/cobra"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
@@ -118,7 +123,16 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 			}
 			// Get voting address
 			from := clientCtx.GetFromAddress()
-
+			fmt.Printf("Vote from: %s\n", from.String())
+			// Retrieve the public key associated with the address
+			pubKey, err := getPublicKeyFromAddress(clientCtx, from)
+			if err != nil {
+				return fmt.Errorf("failed to get public key for address %s: %v", from, err)
+			}
+			if pubKey == nil {
+				return fmt.Errorf("public key for address %s is nil", from)
+			}
+			fmt.Printf("Public key: %s\n", pubKey.String())
 			// validate that the proposal id is a uint
 			proposalID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -153,4 +167,26 @@ func NewCmdCastVoteFromGridnode() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func getPublicKeyFromAddress(cliCtx client.Context, addr sdk.AccAddress) (cryptotypes.PubKey, error) {
+	// Query the account information using the address
+	queryClient := authtypes.NewQueryClient(cliCtx)
+	accountResponse, err := queryClient.Account(
+		context.Background(),
+		&authtypes.QueryAccountRequest{Address: addr.String()},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Decode the account information
+	var account authtypes.AccountI
+	err = cliCtx.InterfaceRegistry.UnpackAny(accountResponse.Account, &account)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the public key from the account
+	return account.GetPubKey(), nil
 }
