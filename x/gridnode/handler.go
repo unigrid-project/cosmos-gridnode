@@ -5,12 +5,14 @@ import (
 	"strconv"
 
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/keeper"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 )
 
-func NewHandler(am AppModule) sdk.Handler {
+func NewHandler(am AppModule) baseapp.MsgServiceHandler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
 		case *types.MsgGridnodeDelegate:
@@ -43,14 +45,14 @@ func handleMsgDelegate(ctx sdk.Context, am AppModule, msg *types.MsgGridnodeDele
 	maxDelegatable := availableBalance.Amount.Sub(delegatedAmount)
 	fmt.Println("maxDelegatable: ", maxDelegatable)
 
-	msgAmount := sdk.NewInt(msg.Amount) // Convert int64 to sdk.Int
+	msgAmount := math.NewInt(msg.Amount) // Convert int64 to sdk.Int
 	// Check if the delegator has enough balance to delegate the specified amount
 	if msgAmount.GT(maxDelegatable) {
 		return nil, errors.Wrapf(types.ErrInsufficientFunds, "account %s has insufficient funds to delegate %s", delegatorAddr, strconv.FormatInt(msg.Amount, 10))
 	}
 
 	fmt.Println("handleMsgDelegate: ", msg)
-	amount := sdk.NewInt(msg.Amount)
+	amount := math.NewInt(msg.Amount)
 	err = am.keeper.DelegateTokens(ctx, delegatorAddr, amount)
 	if err != nil {
 		return nil, err

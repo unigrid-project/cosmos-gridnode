@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 )
@@ -31,7 +32,7 @@ func (s *msgServer) DelegateTokens(ctx context.Context, req *types.MsgGridnodeDe
 	if err != nil {
 		return nil, err
 	}
-	amount := sdk.NewInt(req.Amount)
+	amount := math.NewInt(req.Amount)
 
 	// Call the Keeper's DelegateTokens method to perform the business logic
 	err = s.Keeper.DelegateTokens(sdkCtx, delegatorAddr, amount)
@@ -54,7 +55,7 @@ func (s *msgServer) UndelegateTokens(ctx context.Context, req *types.MsgGridnode
 	if err != nil {
 		return nil, err
 	}
-	amount := sdk.NewInt(req.Amount)
+	amount := math.NewInt(req.Amount)
 
 	// Call the Keeper's UndelegateTokens method to perform the business logic
 	err = s.Keeper.UndelegateTokens(sdkCtx, delegatorAddr, amount)
