@@ -4,6 +4,8 @@ import (
 	"context"
 	"math/big"
 
+	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 	"google.golang.org/grpc/codes"
@@ -33,7 +35,7 @@ func (k Keeper) DelegatedAmount(goCtx context.Context, req *types.QueryDelegated
 	}
 
 	// Convert the byte value to the appropriate data type
-	amount := sdk.NewIntFromBigInt(new(big.Int).SetBytes(bz))
+	amount := math.NewIntFromBigInt(new(big.Int).SetBytes(bz))
 
 	return &types.QueryDelegatedAmountResponse{Amount: amount.Int64()}, nil
 }

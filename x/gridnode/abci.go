@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/keeper"
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
@@ -20,7 +22,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	// Iterate over all unbonding entries
 	store := ctx.KVStore(k.GetStoreKey())
-	iterator := sdk.KVStorePrefixIterator(store, []byte(k.GetBondingPrefix()))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte(k.GetBondingPrefix()))
 
 	defer iterator.Close()
 
@@ -47,7 +49,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				if err != nil {
 					// Handle the error
 				}
-				amount := sdk.NewInt(entry.Amount)
+				amount := math.NewInt(entry.Amount)
 				coin := sdk.NewCoin("ugd", amount)
 				snd := bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, delegatorAddr, sdk.NewCoins(coin))
 				if snd != nil {
@@ -60,7 +62,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				k.SetDelegatedAmount(ctx, delegatorAddr, newDelegatedAmount)
 
 				// Placeholder to call hedgehog
-				fmt.Printf("Placeholder: Notify hedgehog that account %s is unbonding %s tokens.\n", entry.Account, entry.Amount)
+				fmt.Printf("Placeholder: Notify hedgehog that account %s is unbonding %d tokens.\n", entry.Account, entry.Amount)
 				// TODO: Implement the actual call to hedgehog here
 
 				// Emit an event for successful unbonding
