@@ -1,6 +1,7 @@
 package gridnode
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -13,7 +14,8 @@ import (
 	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
 )
 
-func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
 	k.StartHeartbeatTimer(ctx)
 	// Get the current block time
 	currentTime := ctx.BlockTime()
