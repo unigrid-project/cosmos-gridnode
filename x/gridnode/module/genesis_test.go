@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	keepertest "github.com/unigrid-project/cosmos-sdk-gridnode/testutil/keeper"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/testutil/nullify"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	keepertest "github.com/unigrid-project/cosmos-gridnode/testutil/keeper"
+	"github.com/unigrid-project/cosmos-gridnode/testutil/nullify"
+	gridnode "github.com/unigrid-project/cosmos-gridnode/x/gridnode/module"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 func TestGenesis(t *testing.T) {

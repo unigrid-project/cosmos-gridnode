@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	keepertest "github.com/unigrid-project/cosmos-sdk-gridnode/testutil/keeper"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/keeper"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	keepertest "github.com/unigrid-project/cosmos-gridnode/testutil/keeper"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/keeper"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {

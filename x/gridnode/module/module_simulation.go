@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	gridnodesimulation "github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/simulation"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	gridnodesimulation "github.com/unigrid-project/cosmos-gridnode/x/gridnode/simulation"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 // avoid unused import issue

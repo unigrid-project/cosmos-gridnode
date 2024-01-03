@@ -14,8 +14,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/keeper"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/keeper"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 func GridnodeKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
