@@ -8,8 +8,8 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/keeper"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/keeper"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 func NewHandler(am AppModule) baseapp.MsgServiceHandler {

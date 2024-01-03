@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	testkeeper "github.com/unigrid-project/cosmos-sdk-gridnode/testutil/keeper"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	testkeeper "github.com/unigrid-project/cosmos-gridnode/testutil/keeper"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 func TestParamsQuery(t *testing.T) {

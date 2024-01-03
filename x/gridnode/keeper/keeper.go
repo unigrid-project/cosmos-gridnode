@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 type (

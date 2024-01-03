@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 func CmdUnbondingEntries() *cobra.Command {

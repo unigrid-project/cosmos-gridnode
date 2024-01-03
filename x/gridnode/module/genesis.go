@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/keeper"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/keeper"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.

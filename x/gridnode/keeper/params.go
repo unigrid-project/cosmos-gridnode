@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unigrid-project/cosmos-sdk-gridnode/x/gridnode/types"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 // GetParams get all parameters as types.Params
