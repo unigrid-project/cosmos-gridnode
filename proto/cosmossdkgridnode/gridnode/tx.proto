@@ -3,9 +3,9 @@ package cosmossdkgridnode.gridnode;
 
 import "google/api/annotations.proto";
 import "amino/amino.proto";
-import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
+import "cosmos/msg/v1/msg.proto";
 
 option go_package = "github.com/unigrid-project/cosmos-gridnode/x/gridnode/types";
 
@@ -33,6 +33,7 @@ message Delegation {
 
 // MsgGridnodeDelegate is the request type for the Msg/DelegateTokens RPC method.
 message MsgGridnodeDelegate {
+  option (cosmos.msg.v1.signer) = "delegator_address";
   string delegator_address = 1;
   int64 amount = 2;
   int64 timestamp = 3; // Timestamp in Unix format or
@@ -46,6 +47,7 @@ message MsgGridnodeDelegateResponse {
 }
 
 message MsgGridnodeUndelegate {
+  option (cosmos.msg.v1.signer) = "delegator_address";
   string delegator_address = 1;
   int64 amount = 2;
   int64 timestamp = 3; // Timestamp in Unix format or

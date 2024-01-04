@@ -238,9 +238,9 @@ func RegisterMsgHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 }
 
 var (
-	pattern_Msg_DelegateTokens_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"gridnode", "delegate-tokens"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Msg_DelegateTokens_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"gridnode", "delegate-tokens"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Msg_UndelegateTokens_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"gridnode", "undelegate-tokens"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Msg_UndelegateTokens_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"gridnode", "undelegate-tokens"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

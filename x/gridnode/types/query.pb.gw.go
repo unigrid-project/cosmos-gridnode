@@ -436,13 +436,13 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"gridnode", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"gridnode", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_DelegatedAmount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"gridnode", "delegated-amount", "delegator_address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_DelegatedAmount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"gridnode", "delegated-amount", "delegator_address"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_UnbondingEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"gridnode", "query-unbonding", "bonding_account_address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_UnbondingEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"gridnode", "query-unbonding", "bonding_account_address"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_AllDelegations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"gridnode", "all-delegations"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AllDelegations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"gridnode", "all-delegations"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

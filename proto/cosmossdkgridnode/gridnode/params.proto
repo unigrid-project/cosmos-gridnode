@@ -1,11 +1,13 @@
 syntax = "proto3";
 package cosmossdkgridnode.gridnode;
 
+import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/unigrid-project/cosmos-gridnode/x/gridnode/types";
 
 // Params defines the parameters for the module.
 message Params {  
-
+    option (amino.name) = "pax/x/gridnode/Params";
+    option (gogoproto.equal) = true;
 }
