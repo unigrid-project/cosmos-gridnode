@@ -5,7 +5,7 @@ import (
 	"fmt"
 	io "io"
 
-	"github.com/unigrid-project/cosmos-sdk-common/common/httpclient"
+	"github.com/unigrid-project/cosmos-common/common/httpclient"
 )
 
 type HedgehogData struct {

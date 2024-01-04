@@ -15,8 +15,8 @@ import (
 	"github.com/spf13/viper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/unigrid-project/cosmos-common/common/httpclient"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
-	"github.com/unigrid-project/cosmos-sdk-common/common/httpclient"
 )
 
 const (
