@@ -174,12 +174,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/spf13/cobra"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	// this line is used by starport scaffolding # 1
 
 	modulev1 "github.com/unigrid-project/cosmos-gridnode/api/gridnode/module"
+	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/client/cli"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/keeper"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
@@ -237,6 +239,11 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
 	return genState.Validate()
+}
+
+// // GetTxCmd returns the root Tx command for the module. The subcommands of this root command are used by end-users to generate new transactions containing messages defined in the module
+func (a AppModuleBasic) GetTxCmd() *cobra.Command {
+	return cli.GetTxCmd()
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
