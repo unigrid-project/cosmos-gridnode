@@ -171,8 +171,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/spf13/cobra"
 
@@ -219,7 +222,9 @@ func (AppModuleBasic) Name() string {
 
 // RegisterLegacyAminoCodec registers the amino codec for the module, which is used
 // to marshal and unmarshal structs to/from []byte in order to persist them in the module's KVStore.
-func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	types.RegisterCodec(cdc)
+}
 
 // RegisterInterfaces registers a module's interface types and their concrete implementations as proto.Message.
 func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
@@ -311,7 +316,12 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock contains the logic that is automatically triggered at the beginning of each block.
 // The begin block implementation is optional.
-func (am AppModule) BeginBlock(_ context.Context) error {
+func (am AppModule) BeginBlock(ctx context.Context) error {
+	fmt.Println("BeginBlock: start")
+
+	BeginBlocker(ctx, am.keeper) // Call BeginBlocker without expecting a return value
+
+	fmt.Println("BeginBlock: completed successfully")
 	return nil
 }
 
@@ -353,32 +363,37 @@ type ModuleInputs struct {
 type ModuleOutputs struct {
 	depinject.Out
 
-	ExampleKeeper keeper.Keeper
-	Module        appmodule.AppModule
+	GridnodeKeeper keeper.Keeper
+	Module         appmodule.AppModule
 }
 
 func ProvideModule(in ModuleInputs) ModuleOutputs {
 	// default to governance authority if not provided
-	//authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	// if in.Config.Authority != "" {
-	// 	authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
-	// }
-	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
-	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
+	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
+	if in.Config.Authority != "" {
+		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
+	}
 
-	paramsSubspace := typesparams.NewSubspace(in.Cdc,
+	// storeKey := storetypes.NewKVStoreKey(types.StoreKey)
+	// memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
+	paramKey := storetypes.NewKVStoreKey(types.ParamsKey)
+	paramMemKey := storetypes.NewMemoryStoreKey(types.PramsMemKey)
+	paramsSubspace := typesparams.NewSubspace(
+		in.Cdc,
 		types.Amino,
-		storeKey,
-		memStoreKey,
+		paramKey,
+		paramMemKey,
 		"GridnodeParams",
 	)
 
 	k := keeper.NewKeeper(
 		in.Cdc,
-		storeKey,
-		memStoreKey,
+		//storeKey,
+		//memStoreKey,
 		paramsSubspace,
 		in.BankKeeper,
+		authority.String(),
+		in.StoreService,
 	)
 	m := NewAppModule(
 		in.Cdc,
@@ -387,5 +402,5 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.BankKeeper,
 	)
 
-	return ModuleOutputs{ExampleKeeper: *k, Module: m}
+	return ModuleOutputs{GridnodeKeeper: *k, Module: m}
 }

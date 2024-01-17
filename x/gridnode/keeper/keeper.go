@@ -7,12 +7,14 @@ import (
 	"sync"
 	"time"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
 	sdkmath "cosmossdk.io/math"
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
@@ -28,15 +30,17 @@ type (
 		govKeeper        types.GovKeeper
 		heartbeatMgr     *HeartbeatManager
 		heartbeatStarted bool
+		authority        string
+		storeService     store.KVStoreService
 	}
 )
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey,
-	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	bk types.BankKeeper,
+	authority string,
+	storeService store.KVStoreService,
 
 ) *Keeper {
 	if !ps.HasKeyTable() {
@@ -44,15 +48,16 @@ func NewKeeper(
 	}
 
 	keeper := &Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
-		bankKeeper: bk,
+		cdc:          cdc,
+		paramstore:   ps,
+		bankKeeper:   bk,
+		authority:    authority,
+		storeService: storeService,
 	}
 
-	keeper.heartbeatMgr = NewHeartbeatManager(storeKey, keeper)
-
+	//keeper.heartbeatMgr = NewHeartbeatManager(storeKey, keeper)
+	// Initialize HeartbeatManager with storeService instead of storeKey
+	keeper.heartbeatMgr = NewHeartbeatManager(storeService, keeper)
 	return keeper
 }
 
@@ -105,7 +110,9 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 	// ... similar logic to release the tokens
 	//fmt.Println("UndelegateTokens: ", account, amount)
 	// Retrieve the current unbonding entries for the account
-	store := ctx.KVStore(k.storeKey)
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
+
 	key := k.keyForUnBonding(account)
 	var currentUnbondingEntries []types.UnbondingEntry
 	if bz := store.Get(key); bz != nil {
@@ -171,8 +178,13 @@ func (k Keeper) GetBankKeeper() types.BankKeeper {
 	return k.bankKeeper
 }
 
+func (k Keeper) GetStoreService() store.KVStoreService {
+	return k.storeService
+}
+
 func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
-	store := ctx.KVStore(k.storeKey)
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	key := k.keyForDelegator(delegator)
 
 	fmt.Println("Getting Locked Balance for delegator: ", delegator, " with key: ", string(key)) // Log the delegator and the key being used to get the balance
@@ -187,11 +199,8 @@ func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkm
 }
 
 func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, error) {
-	store := ctx.KVStore(k.storeKey)
-
-	if store == nil {
-		return nil, errors.New("store is nil", 0, "QueryAllDelegations")
-	}
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 
 	delegatedAmountPrefixStore := prefix.NewStore(store, []byte(delegatedAmountPrefix))
 
@@ -287,7 +296,8 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 }
 
 func (k Keeper) SetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
-	store := ctx.KVStore(k.storeKey)
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	key := k.keyForDelegator(delegator)
 	fmt.Println("Setting Locked Balance: ", amount, " for delegator: ", delegator, " with key: ", string(key)) // Log the amount being set, the delegator, and the key being used
 	store.Set(key, amount.BigInt().Bytes())
@@ -310,7 +320,8 @@ func (k Keeper) keyForUnBonding(delegator sdk.AccAddress) []byte {
 }
 
 func (k Keeper) GetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
-	store := ctx.KVStore(k.storeKey)
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	byteValue := store.Get(k.keyForDelegator(delegator))
 	if byteValue == nil {
 		fmt.Println("No delegation found for address:", delegator)
@@ -322,7 +333,8 @@ func (k Keeper) GetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress) sd
 }
 
 func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
-	store := ctx.KVStore(k.storeKey)
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	if amount.IsNegative() {
 		fmt.Println("Warning: Trying to set a negative delegation amount for address:", delegator)
 		// Handle negative amounts, perhaps log an error or panic
@@ -333,7 +345,8 @@ func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, am
 
 // AddUnbondingEntry adds a new unbonding entry for a given account.
 func (k Keeper) AddUnbondingEntry(ctx sdk.Context, entry types.UnbondingEntry) error {
-	store := ctx.KVStore(k.storeKey)
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	delegatorAddr, err := sdk.AccAddressFromBech32(entry.Account)
 	if err != nil {
 		return err

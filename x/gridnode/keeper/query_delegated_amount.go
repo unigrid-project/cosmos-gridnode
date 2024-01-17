@@ -5,7 +5,9 @@ import (
 	"math/big"
 
 	"cosmossdk.io/math"
+	"cosmossdk.io/store/prefix"
 
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 	"google.golang.org/grpc/codes"
@@ -27,7 +29,8 @@ func (k Keeper) DelegatedAmount(goCtx context.Context, req *types.QueryDelegated
 	key := k.keyForDelegator(delegatorAddr)
 
 	// Retrieve the value from the store
-	store := ctx.KVStore(k.storeKey)
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	bz := store.Get(key)
 	if bz == nil {
 		// Return zero if no amount is found for the delegator

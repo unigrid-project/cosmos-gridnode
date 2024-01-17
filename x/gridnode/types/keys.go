@@ -10,11 +10,13 @@ const (
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
 
+	ParamsKey = ModuleName + "/ParamsKey"
 	// RouterKey defines the module's message routing key
 	RouterKey = ModuleName
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_gridnode"
+	PramsMemKey = "mem_gridnode_params"
 )
 
 func KeyPrefix(p string) []byte {

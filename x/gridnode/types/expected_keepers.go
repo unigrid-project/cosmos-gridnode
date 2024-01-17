@@ -26,3 +26,9 @@ type GovKeeper interface {
 	// Methods from the x/gov module you want to access
 	AddVote(ctx context.Context, proposalID uint64, voterAddr sdk.AccAddress, option govtypes.VoteOption) (govtypes.Vote, error)
 }
+
+// ParamSubspace defines the expected Subspace interface for parameters.
+type ParamSubspace interface {
+	Get(context.Context, []byte, interface{})
+	Set(context.Context, []byte, interface{})
+}

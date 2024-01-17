@@ -11,23 +11,28 @@ import (
 	"sync"
 	"time"
 
-	store "cosmossdk.io/store/types"
+	"cosmossdk.io/core/store"
+	"cosmossdk.io/store/prefix"
+
+	//storeTypes "cosmossdk.io/store/types"
 	"github.com/spf13/viper"
 
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-common/common/httpclient"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 )
 
 const (
-	interval = 10 * time.Minute
+	interval = 10 * time.Second
 	hashKey  = "lastHashKey"
 )
 
 type HeartbeatManager struct {
-	StoreKey store.StoreKey
-	Keeper   *Keeper
-	started  bool
+	//StoreKey store.StoreKey
+	storeService store.KVStoreService
+	Keeper       *Keeper
+	started      bool
 }
 
 type Delegation struct {
@@ -35,10 +40,11 @@ type Delegation struct {
 	DelegatedAmount int64  `json:"delegated_amount"`
 }
 
-func NewHeartbeatManager(storeKey store.StoreKey, keeper *Keeper) *HeartbeatManager {
+func NewHeartbeatManager(storeService store.KVStoreService, keeper *Keeper) *HeartbeatManager {
 	return &HeartbeatManager{
-		StoreKey: storeKey,
-		Keeper:   keeper,
+		//StoreKey: storeKey,
+		storeService: storeService,
+		Keeper:       keeper,
 	}
 }
 
@@ -49,8 +55,9 @@ func (hm *HeartbeatManager) SendHeartbeatIfDataChanged(ctx sdk.Context, data []D
 	sort.Slice(data, func(i, j int) bool {
 		return data[i].Account < data[j].Account
 	})
+	storeAdapter := runtime.KVStoreAdapter(hm.Keeper.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 
-	store := ctx.KVStore(hm.StoreKey)
 	newHashBytes := sha256.Sum256([]byte(fmt.Sprintf("%v", data)))
 	newHash := hex.EncodeToString(newHashBytes[:])
 	fmt.Printf("New Hash: %s", newHash)

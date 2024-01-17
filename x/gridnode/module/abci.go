@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/keeper"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
@@ -20,11 +22,14 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 	// Get the current block time
 	currentTime := ctx.BlockTime()
 
-	//fmt.Println("BeginBlocker started. Current block time:", currentTime)
-
+	fmt.Println("BeginBlocker started. Current block time:", currentTime)
+	fmt.Println("CTX BlockHeight:", ctx.BlockHeight())
 	// Iterate over all unbonding entries
-	store := ctx.KVStore(k.GetStoreKey())
+	storeAdapter := runtime.KVStoreAdapter(k.GetStoreService().OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
+
 	iterator := storetypes.KVStorePrefixIterator(store, []byte(k.GetBondingPrefix()))
+	fmt.Println("After store error:", store)
 
 	defer iterator.Close()
 

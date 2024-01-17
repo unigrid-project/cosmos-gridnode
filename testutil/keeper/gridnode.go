@@ -5,12 +5,14 @@ import (
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/store"
+
 	"cosmossdk.io/store/metrics"
 	storetypes "cosmossdk.io/store/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cdb "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
@@ -19,6 +21,7 @@ import (
 )
 
 func GridnodeKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+	authority := sdk.AccAddress("authority")
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -43,10 +46,10 @@ func GridnodeKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 
 	k := keeper.NewKeeper(
 		cdc,
-		storeKey,
-		memStoreKey,
 		paramsSubspace,
 		bankKeeper, // Pass the bankKeeper as an argument
+		authority.String(),
+		runtime.NewKVStoreService(storeKey),
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
