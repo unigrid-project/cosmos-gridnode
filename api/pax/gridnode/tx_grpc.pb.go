@@ -19,15 +19,17 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Msg_UpdateParams_FullMethodName = "/pax.gridnode.Msg/UpdateParams"
+	Msg_DelegateTokens_FullMethodName   = "/pax.gridnode.Msg/DelegateTokens"
+	Msg_UndelegateTokens_FullMethodName = "/pax.gridnode.Msg/UndelegateTokens"
+	Msg_UpdateParams_FullMethodName     = "/pax.gridnode.Msg/UpdateParams"
 )
 
 // MsgClient is the client API for Msg service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// UpdateParams defines a (governance) operation for updating the module
-	// parameters. The authority defaults to the x/gov module account.
+	DelegateTokens(ctx context.Context, in *MsgGridnodeDelegate, opts ...grpc.CallOption) (*MsgGridnodeDelegateResponse, error)
+	UndelegateTokens(ctx context.Context, in *MsgGridnodeUndelegate, opts ...grpc.CallOption) (*MsgGridnodeUndelegateResponse, error)
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 }
 
@@ -37,6 +39,24 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
+}
+
+func (c *msgClient) DelegateTokens(ctx context.Context, in *MsgGridnodeDelegate, opts ...grpc.CallOption) (*MsgGridnodeDelegateResponse, error) {
+	out := new(MsgGridnodeDelegateResponse)
+	err := c.cc.Invoke(ctx, Msg_DelegateTokens_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UndelegateTokens(ctx context.Context, in *MsgGridnodeUndelegate, opts ...grpc.CallOption) (*MsgGridnodeUndelegateResponse, error) {
+	out := new(MsgGridnodeUndelegateResponse)
+	err := c.cc.Invoke(ctx, Msg_UndelegateTokens_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
@@ -52,8 +72,8 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// UpdateParams defines a (governance) operation for updating the module
-	// parameters. The authority defaults to the x/gov module account.
+	DelegateTokens(context.Context, *MsgGridnodeDelegate) (*MsgGridnodeDelegateResponse, error)
+	UndelegateTokens(context.Context, *MsgGridnodeUndelegate) (*MsgGridnodeUndelegateResponse, error)
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
@@ -62,6 +82,12 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
+func (UnimplementedMsgServer) DelegateTokens(context.Context, *MsgGridnodeDelegate) (*MsgGridnodeDelegateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelegateTokens not implemented")
+}
+func (UnimplementedMsgServer) UndelegateTokens(context.Context, *MsgGridnodeUndelegate) (*MsgGridnodeUndelegateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UndelegateTokens not implemented")
+}
 func (UnimplementedMsgServer) UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
 }
@@ -76,6 +102,42 @@ type UnsafeMsgServer interface {
 
 func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 	s.RegisterService(&Msg_ServiceDesc, srv)
+}
+
+func _Msg_DelegateTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGridnodeDelegate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).DelegateTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_DelegateTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).DelegateTokens(ctx, req.(*MsgGridnodeDelegate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UndelegateTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGridnodeUndelegate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UndelegateTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UndelegateTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UndelegateTokens(ctx, req.(*MsgGridnodeUndelegate))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -103,6 +165,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "pax.gridnode.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "DelegateTokens",
+			Handler:    _Msg_DelegateTokens_Handler,
+		},
+		{
+			MethodName: "UndelegateTokens",
+			Handler:    _Msg_UndelegateTokens_Handler,
+		},
 		{
 			MethodName: "UpdateParams",
 			Handler:    _Msg_UpdateParams_Handler,

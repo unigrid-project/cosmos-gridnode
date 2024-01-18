@@ -183,7 +183,7 @@ import (
 
 	// this line is used by starport scaffolding # 1
 
-	modulev1 "github.com/unigrid-project/cosmos-gridnode/api/gridnode/module"
+	modulev1 "github.com/unigrid-project/cosmos-gridnode/api/pax/gridnode/module"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/client/cli"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/keeper"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
