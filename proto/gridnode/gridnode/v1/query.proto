@@ -1,8 +1,8 @@
 syntax = "proto3";
-package pax.gridnode;
+package gridnode.gridnode.v1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "pax/gridnode/params.proto";
+import "gridnode/gridnode/v1/params.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 

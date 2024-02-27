@@ -1,8 +1,8 @@
 syntax = "proto3";
-package pax.gridnode;
+package gridnode.gridnode.v1;
 
 import "gogoproto/gogo.proto";
-import "pax/gridnode/params.proto";
+import "gridnode/gridnode/v1/params.proto";
 
 option go_package = "github.com/unigrid-project/cosmos-gridnode/x/gridnode/types";
 
