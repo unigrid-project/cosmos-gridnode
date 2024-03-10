@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/google/uuid"
@@ -14,6 +15,11 @@ const (
 	TypeMsgDelegate   = "delegategridnode"
 	TypeMsgUndelegate = "undelegategridnode"
 )
+
+type DelegationData struct {
+	LockedBalance sdkmath.Int
+	PublicKey     string // Assuming the public key is stored as a string
+}
 
 func NewMsgDelegateGridnode(delegatorAddress string, amount int64) *MsgGridnodeDelegate {
 	fmt.Println("NewMsgDelegateGridnode: ", delegatorAddress, amount)

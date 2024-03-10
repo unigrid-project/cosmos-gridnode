@@ -23,6 +23,7 @@ message DelegationInfo {
   string account = 1;
   int64 delegated_amount = 2;
   repeated SimpleUnbondingEntry unbonding_entries = 3; // New field for unbonding entries
+  string public_key = 4;
 }
 
 // Query defines the gRPC querier service.

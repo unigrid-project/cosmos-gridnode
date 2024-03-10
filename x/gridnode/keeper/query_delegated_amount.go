@@ -2,9 +2,8 @@ package keeper
 
 import (
 	"context"
-	"math/big"
+	"encoding/json"
 
-	"cosmossdk.io/math"
 	"cosmossdk.io/store/prefix"
 
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -21,24 +20,24 @@ func (k Keeper) DelegatedAmount(goCtx context.Context, req *types.QueryDelegated
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// Define the key for the delegated amount, assuming it's based on the delegator's address
 	delegatorAddr, err := sdk.AccAddressFromBech32(req.DelegatorAddress)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid delegator address")
 	}
 	key := k.keyForDelegator(delegatorAddr)
 
-	// Retrieve the value from the store
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	bz := store.Get(key)
 	if bz == nil {
-		// Return zero if no amount is found for the delegator
 		return &types.QueryDelegatedAmountResponse{Amount: 0}, nil
 	}
 
-	// Convert the byte value to the appropriate data type
-	amount := math.NewIntFromBigInt(new(big.Int).SetBytes(bz))
+	var delegationData types.DelegationData
+	err = json.Unmarshal(bz, &delegationData)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to unmarshal delegation data: %v", err)
+	}
 
-	return &types.QueryDelegatedAmountResponse{Amount: amount.Int64()}, nil
+	return &types.QueryDelegatedAmountResponse{Amount: delegationData.LockedBalance.Int64()}, nil
 }

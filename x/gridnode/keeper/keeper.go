@@ -1,9 +1,9 @@
 package keeper
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"sync"
 	"time"
 
@@ -13,6 +13,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
+	"github.com/cometbft/cometbft/crypto"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -32,6 +33,7 @@ type (
 		heartbeatStarted bool
 		authority        string
 		storeService     store.KVStoreService
+		accountKeeper    types.AccountKeeper
 	}
 )
 
@@ -41,6 +43,7 @@ func NewKeeper(
 	bk types.BankKeeper,
 	authority string,
 	storeService store.KVStoreService,
+	ak types.AccountKeeper,
 
 ) *Keeper {
 	if !ps.HasKeyTable() {
@@ -48,11 +51,12 @@ func NewKeeper(
 	}
 
 	keeper := &Keeper{
-		cdc:          cdc,
-		paramstore:   ps,
-		bankKeeper:   bk,
-		authority:    authority,
-		storeService: storeService,
+		cdc:           cdc,
+		paramstore:    ps,
+		bankKeeper:    bk,
+		authority:     authority,
+		storeService:  storeService,
+		accountKeeper: ak,
 	}
 
 	//keeper.heartbeatMgr = NewHeartbeatManager(storeKey, keeper)
@@ -77,6 +81,24 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 	maxDelegatable := availableBalance.Amount.Sub(delegatedAmount)
 	fmt.Println("maxDelegatable: ", maxDelegatable)
 
+	// Retrieve the account using the delegator's address
+	account := k.accountKeeper.GetAccount(ctx, delegator)
+	if account == nil {
+		return fmt.Errorf("account %s not found", delegator)
+	}
+
+	// Get the public key from the account
+	pubKey := account.GetPubKey()
+	if pubKey == nil {
+		return fmt.Errorf("public key not found for account %s", delegator)
+	}
+	fmt.Printf("Public Key for delegator: %s\n", pubKey)
+	// Convert the public key to a usable format or log it
+	pubKeyBytes := pubKey.Bytes()
+	fmt.Println("Public Key bytes for delegator:", pubKeyBytes)
+	pubKeyHex := hex.EncodeToString(pubKeyBytes)
+	fmt.Println("Public Key in Hex:", pubKeyHex)
+	//pubKeyHex := PublicKeyToHex(pubKey)
 	// Check if the delegator has enough balance to delegate the specified amount
 	if amount.GT(maxDelegatable) {
 		return errors.Wrapf(types.ErrInsufficientFunds, "account %s has insufficient funds to delegate %s", delegator, amount.String())
@@ -93,7 +115,7 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 	fmt.Println("Current Locked balance before adding: ", lockedBalance) // Log the current locked balance before adding the new amount
 	lockedBalance = lockedBalance.Add(amount)
 	fmt.Println("Locked balance after adding: ", lockedBalance) // Log the locked balance after adding the new amount
-	k.SetLockedBalance(ctx, delegator, lockedBalance)
+	k.SetLockedBalance(ctx, delegator, lockedBalance, pubKeyHex)
 
 	// Emitting events
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
@@ -187,15 +209,21 @@ func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkm
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	key := k.keyForDelegator(delegator)
 
-	fmt.Println("Getting Locked Balance for delegator: ", delegator, " with key: ", string(key)) // Log the delegator and the key being used to get the balance
+	fmt.Println("Getting Locked Balance for delegator: ", delegator, " with key: ", string(key))
 	bz := store.Get(key)
 	if bz == nil {
-		fmt.Println("No Locked Balance found for delegator: ", delegator) // Log if no balance is found for the delegator
+		fmt.Println("No Locked Balance found for delegator: ", delegator)
 		return sdkmath.ZeroInt()
 	}
-	amount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(bz))
-	fmt.Println("Found Locked Balance: ", amount, " for delegator: ", delegator) // Log the amount found for the delegator
-	return amount
+
+	var delegationData types.DelegationData
+	err := json.Unmarshal(bz, &delegationData)
+	if err != nil {
+		panic(err) // Handle the error appropriately. You might want to return an error instead of panicking.
+	}
+
+	fmt.Println("Found Locked Balance: ", delegationData.LockedBalance, " for delegator: ", delegator)
+	return delegationData.LockedBalance
 }
 
 func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, error) {
@@ -230,8 +258,13 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 			// Extract the account address directly
 			accountAddr := string(key)
 
-			// Parse the delegated amount from the value
-			delegatedAmount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(value))
+			// Deserialize the byte value to DelegationData
+			var delegationData types.DelegationData
+			err := json.Unmarshal(value, &delegationData)
+			if err != nil {
+				fmt.Printf("Error unmarshalling delegation data: %v\n", err)
+				return // or return an error
+			}
 
 			// Convert the account address string to sdk.AccAddress
 			delegatorAddr, err := sdk.AccAddressFromBech32(accountAddr)
@@ -249,8 +282,9 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 				// If bz is nil, append a DelegationInfo object with an empty UnbondingEntries field
 				info := types.DelegationInfo{
 					Account:          accountAddr,
-					DelegatedAmount:  delegatedAmount.Int64(),
+					DelegatedAmount:  delegationData.LockedBalance.Int64(),
 					UnbondingEntries: nil, // UnbondingEntries is nil
+					PublicKey:        delegationData.PublicKey,
 				}
 				mu.Lock() // Lock the mutex to prevent concurrent write to the slice
 				delegations = append(delegations, info)
@@ -279,8 +313,9 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 				// Append a DelegationInfo object with the UnbondingEntries field populated
 				info := types.DelegationInfo{
 					Account:          accountAddr,
-					DelegatedAmount:  delegatedAmount.Int64(),
+					DelegatedAmount:  delegationData.LockedBalance.Int64(),
 					UnbondingEntries: simpleUnbondingEntries, // UnbondingEntries is populated
+					PublicKey:        delegationData.PublicKey,
 				}
 				mu.Lock() // Lock the mutex to prevent concurrent write to the slice
 				delegations = append(delegations, info)
@@ -295,12 +330,23 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 	return delegations, nil
 }
 
-func (k Keeper) SetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
+func (k Keeper) SetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int, pubKey string) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	key := k.keyForDelegator(delegator)
-	fmt.Println("Setting Locked Balance: ", amount, " for delegator: ", delegator, " with key: ", string(key)) // Log the amount being set, the delegator, and the key being used
-	store.Set(key, amount.BigInt().Bytes())
+
+	delegationData := types.DelegationData{
+		LockedBalance: amount,
+		PublicKey:     pubKey,
+	}
+
+	data, err := json.Marshal(delegationData)
+	if err != nil {
+		panic(err) // Handle the error appropriately
+	}
+	fmt.Println("Setting Locked Balance: ", amount, " for delegator: ", delegator, " with key: ", string(key), "pubKey: ", pubKey) // Log the amount being set, the delegator, and the key being used
+
+	store.Set(key, data)
 }
 
 const delegatedAmountPrefix = "delegatedAmount-"
@@ -327,9 +373,15 @@ func (k Keeper) GetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress) sd
 		fmt.Println("No delegation found for address:", delegator)
 		return sdkmath.ZeroInt()
 	}
-	amount := sdkmath.NewIntFromBigInt(new(big.Int).SetBytes(byteValue))
-	//fmt.Println("Delegated amount for address", delegator, "is:", amount)
-	return amount
+
+	var delegationData types.DelegationData
+	err := json.Unmarshal(byteValue, &delegationData)
+	if err != nil {
+		panic(err) // Handle the error appropriately
+	}
+
+	fmt.Println("Delegated amount for address", delegator, "is:", delegationData.LockedBalance.Int64())
+	return delegationData.LockedBalance
 }
 
 func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
@@ -381,4 +433,8 @@ func (k *Keeper) StartHeartbeatTimer(ctx sdk.Context) {
 	}
 	fmt.Println("Starting the heartbeat timer")
 	go k.heartbeatMgr.StartHeartbeatTimer(ctx)
+}
+
+func PublicKeyToHex(pubKey crypto.PubKey) string {
+	return hex.EncodeToString(pubKey.Bytes())
 }
