@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: pax/gridnode/query.proto
+// source: gridnode/gridnode/v1/query.proto
 
-package gridnode
+package gridnodev1
 
 import (
 	context "context"
@@ -19,10 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_Params_FullMethodName           = "/pax.gridnode.Query/Params"
-	Query_DelegatedAmount_FullMethodName  = "/pax.gridnode.Query/DelegatedAmount"
-	Query_UnbondingEntries_FullMethodName = "/pax.gridnode.Query/UnbondingEntries"
-	Query_AllDelegations_FullMethodName   = "/pax.gridnode.Query/AllDelegations"
+	Query_Params_FullMethodName           = "/gridnode.gridnode.v1.Query/Params"
+	Query_DelegatedAmount_FullMethodName  = "/gridnode.gridnode.v1.Query/DelegatedAmount"
+	Query_UnbondingEntries_FullMethodName = "/gridnode.gridnode.v1.Query/UnbondingEntries"
+	Query_AllDelegations_FullMethodName   = "/gridnode.gridnode.v1.Query/AllDelegations"
 )
 
 // QueryClient is the client API for Query service.
@@ -199,7 +199,7 @@ func _Query_AllDelegations_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Query_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pax.gridnode.Query",
+	ServiceName: "gridnode.gridnode.v1.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -220,5 +220,5 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pax/gridnode/query.proto",
+	Metadata: "gridnode/gridnode/v1/query.proto",
 }

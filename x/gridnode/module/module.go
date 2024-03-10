@@ -177,13 +177,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
+
 	"github.com/spf13/cobra"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	// this line is used by starport scaffolding # 1
 
-	modulev1 "github.com/unigrid-project/cosmos-gridnode/api/pax/gridnode/module"
+	modulev1 "github.com/unigrid-project/cosmos-gridnode/api/gridnode/gridnode/v1/module"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/client/cli"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/keeper"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
@@ -209,10 +210,11 @@ var (
 // independent methods a Cosmos SDK module needs to implement.
 type AppModuleBasic struct {
 	cdc codec.BinaryCodec
+	ak  types.AccountKeeper
 }
 
-func NewAppModuleBasic(cdc codec.BinaryCodec) AppModuleBasic {
-	return AppModuleBasic{cdc: cdc}
+func NewAppModuleBasic(cdc codec.BinaryCodec, ak types.AccountKeeper) AppModuleBasic {
+	return AppModuleBasic{cdc: cdc, ak: ak}
 }
 
 // Name returns the name of the module as a string.
@@ -283,7 +285,7 @@ func NewAppModule(
 	bankKeeper types.BankKeeper,
 ) AppModule {
 	return AppModule{
-		AppModuleBasic: NewAppModuleBasic(cdc),
+		AppModuleBasic: NewAppModuleBasic(cdc, accountKeeper),
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
@@ -399,6 +401,7 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.BankKeeper,
 		authority.String(),
 		in.StoreService,
+		in.AccountKeeper,
 	)
 	m := NewAppModule(
 		in.Cdc,

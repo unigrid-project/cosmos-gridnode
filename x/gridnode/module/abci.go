@@ -22,8 +22,8 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 	// Get the current block time
 	currentTime := ctx.BlockTime()
 
-	fmt.Println("BeginBlocker started. Current block time:", currentTime)
-	fmt.Println("CTX BlockHeight:", ctx.BlockHeight())
+	//fmt.Println("BeginBlocker started. Current block time:", currentTime)
+	//fmt.Println("CTX BlockHeight:", ctx.BlockHeight())
 	// Iterate over all unbonding entries
 	storeAdapter := runtime.KVStoreAdapter(k.GetStoreService().OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))

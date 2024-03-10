@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: pax/gridnode/tx.proto
+// source: gridnode/gridnode/v1/tx.proto
 
-package gridnode
+package gridnodev1
 
 import (
 	context "context"
@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Msg_DelegateTokens_FullMethodName   = "/pax.gridnode.Msg/DelegateTokens"
-	Msg_UndelegateTokens_FullMethodName = "/pax.gridnode.Msg/UndelegateTokens"
-	Msg_UpdateParams_FullMethodName     = "/pax.gridnode.Msg/UpdateParams"
+	Msg_DelegateTokens_FullMethodName   = "/gridnode.gridnode.v1.Msg/DelegateTokens"
+	Msg_UndelegateTokens_FullMethodName = "/gridnode.gridnode.v1.Msg/UndelegateTokens"
+	Msg_UpdateParams_FullMethodName     = "/gridnode.gridnode.v1.Msg/UpdateParams"
 )
 
 // MsgClient is the client API for Msg service.
@@ -162,7 +162,7 @@ func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Msg_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pax.gridnode.Msg",
+	ServiceName: "gridnode.gridnode.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -179,5 +179,5 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pax/gridnode/tx.proto",
+	Metadata: "gridnode/gridnode/v1/tx.proto",
 }

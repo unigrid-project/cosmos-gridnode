@@ -3,7 +3,7 @@ package gridnode
 import (
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 
-	modulev1 "github.com/unigrid-project/cosmos-gridnode/api/pax/gridnode"
+	modulev1 "github.com/unigrid-project/cosmos-gridnode/api/gridnode/gridnode/v1"
 )
 
 // AutoCLIOptions implements the autocli.HasAutoCLIConfig interface.
