@@ -36,7 +36,7 @@ func handleMsgDelegate(ctx sdk.Context, am AppModule, msg *types.MsgGridnodeDele
 	}
 
 	// Retrieve the available balance of the delegator account
-	availableBalance := am.bankKeeper.GetBalance(ctx, delegatorAddr, "ugd")
+	availableBalance := am.bankKeeper.GetBalance(ctx, delegatorAddr, "uugd")
 	fmt.Println("availableBalance: ", availableBalance)
 	// Retrieve the amount already delegated by the delegator
 	delegatedAmount := am.keeper.GetDelegatedAmount(ctx, delegatorAddr)
