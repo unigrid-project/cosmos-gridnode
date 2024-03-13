@@ -57,7 +57,7 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 					// Handle the error
 				}
 				amount := math.NewInt(entry.Amount)
-				coin := sdk.NewCoin("ugd", amount)
+				coin := sdk.NewCoin("uugd", amount)
 				snd := bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, delegatorAddr, sdk.NewCoins(coin))
 				if snd != nil {
 					fmt.Println("Error sending coins from module to account:", err)

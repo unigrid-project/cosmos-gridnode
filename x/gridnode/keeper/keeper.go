@@ -72,7 +72,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // DelegateTokens locks the tokens for gridnode delegation
 func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) error {
 	// Retrieve the available balance of the delegator account
-	availableBalance := k.bankKeeper.GetBalance(ctx, delegator, "ugd")
+	availableBalance := k.bankKeeper.GetBalance(ctx, delegator, "uugd")
 	fmt.Println("availableBalance: ", availableBalance)
 	// Retrieve the amount already delegated by the delegator
 	delegatedAmount := k.GetDelegatedAmount(ctx, delegator)
@@ -101,11 +101,11 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 	//pubKeyHex := PublicKeyToHex(pubKey)
 	// Check if the delegator has enough balance to delegate the specified amount
 	if amount.GT(maxDelegatable) {
-		return errors.Wrapf(types.ErrInsufficientFunds, "account %s has insufficient funds to delegate %s", delegator, amount.String())
+		return errors.Wrapf(types.ErrInsufficientFunds, "account %s has insufficient funds to delegate %s uugd", delegator, amount.String())
 	}
 
 	// Deduct tokens from user's balance
-	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, delegator, types.ModuleName, sdk.NewCoins(sdk.NewCoin("ugd", amount)))
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, delegator, types.ModuleName, sdk.NewCoins(sdk.NewCoin("uugd", amount)))
 	if err != nil {
 		return errors.Wrapf(types.ErrInsufficientFunds, "failed to delegate tokens: %v", err)
 	}
