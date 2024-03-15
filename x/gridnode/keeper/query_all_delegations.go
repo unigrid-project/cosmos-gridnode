@@ -12,6 +12,7 @@ import (
 // AllDelegations implements the QueryServer.AllDelegations method
 func (k Keeper) AllDelegations(ctx context.Context, req *types.QueryAllDelegationsRequest) (*types.QueryAllDelegationsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	chainID := sdkCtx.ChainID()
 	delegations, err := k.QueryAllDelegations(sdkCtx)
 	if err != nil {
 		return nil, err
@@ -27,5 +28,6 @@ func (k Keeper) AllDelegations(ctx context.Context, req *types.QueryAllDelegatio
 	return &types.QueryAllDelegationsResponse{
 		Delegations: delegationPointers,
 		Pagination:  &query.PageResponse{},
+		ChainId:     chainID,
 	}, nil
 }

@@ -82,4 +82,5 @@ message QueryAllDelegationsRequest {
 message QueryAllDelegationsResponse {
   repeated DelegationInfo delegations = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  string chain_id = 3;
 }
