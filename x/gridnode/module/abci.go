@@ -18,7 +18,8 @@ import (
 
 func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	k.StartHeartbeatTimer(ctx)
+	// disable heartbeat manager for now
+	//k.StartHeartbeatTimer(ctx)
 	// Get the current block time
 	currentTime := ctx.BlockTime()
 
