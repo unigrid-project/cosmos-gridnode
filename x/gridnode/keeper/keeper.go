@@ -130,7 +130,7 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 // UndelegateTokens unlocks the tokens from gridnode delegation
 func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount sdkmath.Int) error {
 	// ... similar logic to release the tokens
-	//fmt.Println("UndelegateTokens: ", account, amount)
+	fmt.Println("UndelegateTokens: ", account, amount)
 	// Retrieve the current unbonding entries for the account
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
@@ -163,7 +163,9 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 	// Define the unbonding period, 21 days TODO: enable this for mainnet
 	//unbondingPeriod := time.Hour * 24 * 21
 	// Define the unbonding period, (for testnet 1 day)
-	unbondingPeriod := time.Hour * 24 * 1
+	//unbondingPeriod := time.Hour * 24 * 1
+	// 2 minutes for testing
+	unbondingPeriod := time.Minute * 2
 	// Calculate the completion time for the unbonding
 	completionTime := blockTime.Add(unbondingPeriod)
 

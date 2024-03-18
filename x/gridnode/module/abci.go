@@ -38,9 +38,12 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 		key := iterator.Key()
 		bz := iterator.Value()
 
+		// Log the key and the raw value
+		fmt.Printf("Processing key: %x, value (raw): %x\n", key, bz)
+
 		var entries []types.UnbondingEntry
 		if err := json.Unmarshal(bz, &entries); err != nil {
-			fmt.Println("Error unmarshalling unbonding entry:", err)
+			fmt.Printf("Error unmarshalling unbonding entry for key %x: %v\n", key, err)
 			continue
 		}
 
@@ -55,7 +58,8 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 				// Process the unbonding
 				delegatorAddr, err := sdk.AccAddressFromBech32(entry.Account)
 				if err != nil {
-					// Handle the error
+					fmt.Printf("Error processing unbonding for delegator %s: %v\n", entry.Account, err)
+					continue
 				}
 				amount := math.NewInt(entry.Amount)
 				coin := sdk.NewCoin("uugd", amount)
@@ -91,15 +95,15 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 			fmt.Printf("All unbonding entries processed for key: %s. Deleting key from store.\n", key)
 			store.Delete(key)
 		} else {
-			bz, err := json.Marshal(newEntries)
+			newBz, err := json.Marshal(newEntries)
 			if err != nil {
-				fmt.Println("Error marshalling new entries:", err)
+				fmt.Printf("Error marshalling new entries for key %x: %v\n", key, err)
 				continue
 			}
-			store.Set(key, bz)
-			//fmt.Printf("Updated unbonding entries for key: %s\n", key)
+			store.Set(key, newBz)
+			fmt.Printf("Updated store for key %x\n", key)
 		}
 	}
 
-	fmt.Println("BeginBlocker completed.")
+	fmt.Println("BeginBlocker gridnode completed.")
 }
