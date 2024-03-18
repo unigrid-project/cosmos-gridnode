@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
+	"cosmossdk.io/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unigrid-project/cosmos-gridnode/x/gridnode/types"
 	"google.golang.org/grpc/codes"
@@ -27,8 +29,10 @@ func (k Keeper) UnbondingEntries(goCtx context.Context, req *types.QueryUnbondin
 	key := k.keyForUnBonding(delegatorAddr)
 
 	// Retrieve the value from the store
-	store := ctx.KVStore(k.storeKey)
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	bz := store.Get(key)
+
 	if bz == nil {
 		// Return an empty list if no unbonding entries are found for the delegator
 		return &types.QueryUnbondingEntriesResponse{UnbondingEntries: nil}, nil
