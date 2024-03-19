@@ -387,6 +387,24 @@ func (k Keeper) GetDelegatedAmount(ctx context.Context, delegator sdk.AccAddress
 	return delegationData.LockedBalance
 }
 
+func (k Keeper) GetPublicKeyForDelegator(ctx context.Context, delegator sdk.AccAddress) (string, error) {
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
+
+	bz := store.Get(k.keyForDelegator(delegator))
+	if bz == nil {
+		return "", errors.New("delegator not found")
+	}
+
+	var delegationData types.DelegationData
+	err := json.Unmarshal(bz, &delegationData)
+	if err != nil {
+		return "", err
+	}
+
+	return delegationData.PublicKey, nil
+}
+
 func (k Keeper) SetDelegatedAmount(ctx context.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))

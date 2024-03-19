@@ -56,6 +56,8 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 
 			if currentTime.After(timestamp) {
 				fmt.Printf("Processing unbonding for delegator: %s, amount: %d\n", entry.Account, entry.Amount)
+				// Fetch the public key along with the current locked balance
+
 				bankKeeper := k.GetBankKeeper()
 				// Process the unbonding
 				delegatorAddr, err := sdk.AccAddressFromBech32(entry.Account)
@@ -63,6 +65,7 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 					fmt.Printf("Error processing unbonding for delegator %s: %v\n", entry.Account, err)
 					continue
 				}
+
 				amount := math.NewInt(entry.Amount)
 				coin := sdk.NewCoin("uugd", amount)
 				snd := bankKeeper.SendCoinsFromModuleToAccount(goCtx, types.ModuleName, delegatorAddr, sdk.NewCoins(coin))
@@ -70,10 +73,30 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 					fmt.Println("Error sending coins from module to account:", err)
 					continue
 				}
-				// Reduce the delegated amount from the store
+				// Get the current delegated and locked amounts
 				currentDelegatedAmount := k.GetDelegatedAmount(goCtx, delegatorAddr)
+				currentLockedBalance := k.GetLockedBalance(goCtx, delegatorAddr)
+
+				// Calculate new amounts after unbonding
 				newDelegatedAmount := currentDelegatedAmount.Sub(amount)
+				newLockedBalance := currentLockedBalance.Sub(amount)
+
+				// Get the public key for the delegator
+				accountPublicKey, errPk := k.GetPublicKeyForDelegator(goCtx, delegatorAddr)
+				if errPk != nil {
+					fmt.Printf("Error retrieving public key for delegator %s: %v\n", entry.Account, errPk)
+					continue
+				}
+				fmt.Printf("Public key for delegator %s: %s\n", entry.Account, accountPublicKey)
+
+				// Update the stored delegated amount
 				k.SetDelegatedAmount(goCtx, delegatorAddr, newDelegatedAmount)
+
+				// Update the stored locked balance with the public key
+				k.SetLockedBalance(goCtx, delegatorAddr, newLockedBalance, accountPublicKey)
+
+				// Log for confirmation
+				fmt.Printf("Updated balance and delegation for delegator %s\n", entry.Account)
 
 				// Placeholder to call hedgehog
 				fmt.Printf("Placeholder: Notify hedgehog that account %s is unbonding %d tokens.\n", entry.Account, entry.Amount)
