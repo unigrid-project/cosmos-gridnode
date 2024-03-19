@@ -47,6 +47,8 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 			continue
 		}
 
+		var entriesChanged bool
+
 		// Filter out entries that have completed unbonding
 		newEntries := make([]types.UnbondingEntry, 0, len(entries))
 		for _, entry := range entries {
@@ -85,27 +87,30 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 						sdk.NewAttribute(types.AttributeKeyAmount, strconv.FormatInt(entry.Amount, 10)),
 					),
 				)
+				entriesChanged = true
 			} else {
 				newEntries = append(newEntries, entry)
 			}
 		}
 
 		// Update the store with the new list of unbonding entries
-		if len(newEntries) == 0 {
-			fmt.Printf("All unbonding entries processed for key: %s. Deleting key from store.\n", key)
-			store.Delete(key)
-		} else {
-			newBz, err := json.Marshal(newEntries)
-			if err != nil {
-				fmt.Printf("Error marshalling new entries for key %x: %v\n", key, err)
-				continue
+		if entriesChanged {
+			if len(newEntries) == 0 {
+				fmt.Printf("All unbonding entries processed for key: %s. Deleting key from store.\n", key)
+				store.Delete(key)
+			} else {
+				newBz, err := json.Marshal(newEntries)
+				if err != nil {
+					fmt.Printf("Error marshalling new entries for key %x: %v\n", key, err)
+					continue
+				}
+
+				// Log the data that is about to be stored
+				fmt.Printf("Updating store for key %x with data: %s\n", key, string(newBz))
+
+				store.Set(key, newBz)
+				fmt.Printf("Updated store for key %x\n", key)
 			}
-
-			// Log the data that is about to be stored
-			fmt.Printf("Updating store for key %x with data: %s\n", key, string(newBz))
-
-			store.Set(key, newBz)
-			fmt.Printf("Updated store for key %x\n", key)
 		}
 	}
 

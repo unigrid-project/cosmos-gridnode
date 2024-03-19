@@ -265,7 +265,7 @@ func (k Keeper) QueryAllDelegations(ctx context.Context) ([]types.DelegationInfo
 			var delegationData types.DelegationData
 			err := json.Unmarshal(value, &delegationData)
 			if err != nil {
-				fmt.Printf("Error unmarshalling delegation data: %v\n", err)
+				fmt.Printf("Error unmarshalling delegation data: %v. Raw data: %x\n", err, value)
 				return // or return an error
 			}
 
@@ -395,7 +395,7 @@ func (k Keeper) SetDelegatedAmount(ctx context.Context, delegator sdk.AccAddress
 		// Handle negative amounts, perhaps log an error or panic
 	}
 	store.Set(k.keyForDelegator(delegator), amount.BigInt().Bytes())
-	//fmt.Println("Set delegated amount for address", delegator, "to:", amount)
+	fmt.Println("Set delegated amount for address", delegator, "to:", amount)
 }
 
 // AddUnbondingEntry adds a new unbonding entry for a given account.
