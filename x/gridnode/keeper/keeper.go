@@ -393,7 +393,7 @@ func (k Keeper) GetPublicKeyForDelegator(ctx context.Context, delegator sdk.AccA
 
 	bz := store.Get(k.keyForDelegator(delegator))
 	if bz == nil {
-		return "", errors.New("delegator not found")
+		return "", fmt.Errorf("delegator not found")
 	}
 
 	var delegationData types.DelegationData
