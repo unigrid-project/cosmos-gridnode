@@ -26,7 +26,7 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 	//fmt.Println("BeginBlocker started. Current block time:", currentTime)
 	//fmt.Println("CTX BlockHeight:", ctx.BlockHeight())
 	// Iterate over all unbonding entries
-	storeAdapter := runtime.KVStoreAdapter(k.GetStoreService().OpenKVStore(ctx))
+	storeAdapter := runtime.KVStoreAdapter(k.GetStoreService().OpenKVStore(goCtx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 
 	iterator := storetypes.KVStorePrefixIterator(store, []byte(k.GetBondingPrefix()))
@@ -53,7 +53,7 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 			timestamp := time.Unix(entry.CompletionTime, 0)
 
 			if currentTime.After(timestamp) {
-				//fmt.Printf("Processing unbonding for delegator: %s, amount: %s\n", entry.Account, entry.Amount)
+				fmt.Printf("Processing unbonding for delegator: %s, amount: %d\n", entry.Account, entry.Amount)
 				bankKeeper := k.GetBankKeeper()
 				// Process the unbonding
 				delegatorAddr, err := sdk.AccAddressFromBech32(entry.Account)
@@ -63,15 +63,15 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 				}
 				amount := math.NewInt(entry.Amount)
 				coin := sdk.NewCoin("uugd", amount)
-				snd := bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, delegatorAddr, sdk.NewCoins(coin))
+				snd := bankKeeper.SendCoinsFromModuleToAccount(goCtx, types.ModuleName, delegatorAddr, sdk.NewCoins(coin))
 				if snd != nil {
 					fmt.Println("Error sending coins from module to account:", err)
 					continue
 				}
 				// Reduce the delegated amount from the store
-				currentDelegatedAmount := k.GetDelegatedAmount(ctx, delegatorAddr)
+				currentDelegatedAmount := k.GetDelegatedAmount(goCtx, delegatorAddr)
 				newDelegatedAmount := currentDelegatedAmount.Sub(amount)
-				k.SetDelegatedAmount(ctx, delegatorAddr, newDelegatedAmount)
+				k.SetDelegatedAmount(goCtx, delegatorAddr, newDelegatedAmount)
 
 				// Placeholder to call hedgehog
 				fmt.Printf("Placeholder: Notify hedgehog that account %s is unbonding %d tokens.\n", entry.Account, entry.Amount)
@@ -100,6 +100,10 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 				fmt.Printf("Error marshalling new entries for key %x: %v\n", key, err)
 				continue
 			}
+
+			// Log the data that is about to be stored
+			fmt.Printf("Updating store for key %x with data: %s\n", key, string(newBz))
+
 			store.Set(key, newBz)
 			fmt.Printf("Updated store for key %x\n", key)
 		}

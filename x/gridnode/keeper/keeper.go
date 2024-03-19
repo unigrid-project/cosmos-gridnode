@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -70,7 +71,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // DelegateTokens locks the tokens for gridnode delegation
-func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) error {
+func (k Keeper) DelegateTokens(ctx context.Context, delegator sdk.AccAddress, amount sdkmath.Int) error {
 	// Retrieve the available balance of the delegator account
 	availableBalance := k.bankKeeper.GetBalance(ctx, delegator, "uugd")
 	fmt.Println("availableBalance: ", availableBalance)
@@ -116,9 +117,9 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 	lockedBalance = lockedBalance.Add(amount)
 	fmt.Println("Locked balance after adding: ", lockedBalance) // Log the locked balance after adding the new amount
 	k.SetLockedBalance(ctx, delegator, lockedBalance, pubKeyHex)
-
+	uwCtx := sdk.UnwrapSDKContext(ctx)
 	// Emitting events
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
+	uwCtx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeDelegate,
 		sdk.NewAttribute(types.AttributeKeyDelegator, delegator.String()),
 		sdk.NewAttribute(types.AttributeKeyAmount, amount.String()),
@@ -128,7 +129,7 @@ func (k Keeper) DelegateTokens(ctx sdk.Context, delegator sdk.AccAddress, amount
 }
 
 // UndelegateTokens unlocks the tokens from gridnode delegation
-func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount sdkmath.Int) error {
+func (k Keeper) UndelegateTokens(ctx context.Context, account sdk.AccAddress, amount sdkmath.Int) error {
 	// ... similar logic to release the tokens
 	fmt.Println("UndelegateTokens: ", account, amount)
 	// Retrieve the current unbonding entries for the account
@@ -156,9 +157,9 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 	if totalUnbonding.GT(delegatedAmount) {
 		return errors.Wrapf(types.ErrOverUnbond, "attempting to unbond more than the delegated amount")
 	}
-
+	uwCtx := sdk.UnwrapSDKContext(ctx)
 	// Retrieve current block time
-	blockTime := ctx.BlockTime()
+	blockTime := uwCtx.BlockTime()
 
 	// Define the unbonding period, 21 days TODO: enable this for mainnet
 	//unbondingPeriod := time.Hour * 24 * 21
@@ -182,7 +183,7 @@ func (k Keeper) UndelegateTokens(ctx sdk.Context, account sdk.AccAddress, amount
 	}
 
 	// Emit an event or log the unbonding
-	ctx.EventManager().EmitEvent(
+	uwCtx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeUnbond,
 			sdk.NewAttribute(types.AttributeKeyDelegator, account.String()),
@@ -206,7 +207,7 @@ func (k Keeper) GetStoreService() store.KVStoreService {
 	return k.storeService
 }
 
-func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
+func (k Keeper) GetLockedBalance(ctx context.Context, delegator sdk.AccAddress) sdkmath.Int {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	key := k.keyForDelegator(delegator)
@@ -228,7 +229,7 @@ func (k Keeper) GetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress) sdkm
 	return delegationData.LockedBalance
 }
 
-func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, error) {
+func (k Keeper) QueryAllDelegations(ctx context.Context) ([]types.DelegationInfo, error) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 
@@ -332,7 +333,7 @@ func (k Keeper) QueryAllDelegations(ctx sdk.Context) ([]types.DelegationInfo, er
 	return delegations, nil
 }
 
-func (k Keeper) SetLockedBalance(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int, pubKey string) {
+func (k Keeper) SetLockedBalance(ctx context.Context, delegator sdk.AccAddress, amount sdkmath.Int, pubKey string) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	key := k.keyForDelegator(delegator)
@@ -367,7 +368,7 @@ func (k Keeper) keyForUnBonding(delegator sdk.AccAddress) []byte {
 	return []byte(fmt.Sprintf("%s%s", bondingPrefix, delegator.String()))
 }
 
-func (k Keeper) GetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress) sdkmath.Int {
+func (k Keeper) GetDelegatedAmount(ctx context.Context, delegator sdk.AccAddress) sdkmath.Int {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	byteValue := store.Get(k.keyForDelegator(delegator))
@@ -386,7 +387,7 @@ func (k Keeper) GetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress) sd
 	return delegationData.LockedBalance
 }
 
-func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
+func (k Keeper) SetDelegatedAmount(ctx context.Context, delegator sdk.AccAddress, amount sdkmath.Int) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	if amount.IsNegative() {
@@ -398,7 +399,7 @@ func (k Keeper) SetDelegatedAmount(ctx sdk.Context, delegator sdk.AccAddress, am
 }
 
 // AddUnbondingEntry adds a new unbonding entry for a given account.
-func (k Keeper) AddUnbondingEntry(ctx sdk.Context, entry types.UnbondingEntry) error {
+func (k Keeper) AddUnbondingEntry(ctx context.Context, entry types.UnbondingEntry) error {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 	delegatorAddr, err := sdk.AccAddressFromBech32(entry.Account)
