@@ -449,7 +449,7 @@ func (k Keeper) AddUnbondingEntry(ctx context.Context, entry types.UnbondingEntr
 
 func (k *Keeper) StartHeartbeatTimer(ctx sdk.Context) {
 	if k.heartbeatMgr.started {
-		fmt.Println("Heartbeat timer already started")
+		//fmt.Println("Heartbeat timer already started")
 		return
 	}
 	fmt.Println("Starting the heartbeat timer")

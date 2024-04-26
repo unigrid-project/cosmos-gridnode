@@ -30,7 +30,6 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 	store := prefix.NewStore(storeAdapter, []byte(types.StoreKey))
 
 	iterator := storetypes.KVStorePrefixIterator(store, []byte(k.GetBondingPrefix()))
-	fmt.Println("After store error:", store)
 
 	defer iterator.Close()
 
@@ -137,5 +136,5 @@ func BeginBlocker(goCtx context.Context, k keeper.Keeper) {
 		}
 	}
 
-	fmt.Println("BeginBlocker gridnode completed.")
+	//fmt.Println("BeginBlocker gridnode completed.")
 }
